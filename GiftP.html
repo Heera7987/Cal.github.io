@@ -40,11 +40,11 @@
     <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
 
     <div class="result">
-        <p>मुद्रांक शुल्क <span id="fivePercent"></span></p>
-        <p>ब्लाक शुल्क <span id="onePercent"></span></p>
-        <p>उपकर <span id="fivePercentOfTwelve"></span></p>
+        <p>मुद्रांक शुल्क <span id="stampDuty"></span></p>
+        <p>ब्लाक शुल्क <span id="blockFee"></span></p>
+        <p>उपकर <span id="surcharge"></span></p>
         <p><strong>योग (eStamp): <span id="totalSum"></span></strong></p>
-        <p class="highlight">Registration : <span id="registrationFee"></span></p>
+        <p class="highlight">रजिस्ट्रेशन शुल्क: <span id="registrationFee"></span></p>
     </div>
 </div>
 
@@ -52,32 +52,32 @@
     document.getElementById('value').addEventListener('input', function() {
         const value = parseFloat(this.value);
         if (!isNaN(value)) {
-            // मुद्रांक शुल्क 5%
-            const fivePercent = value * 0.05;
+            // मुद्रांक शुल्क 0.5%
+            const stampDuty = value * 0.005;
 
             // ब्लाक शुल्क 1%
-            const onePercent = value * 0.01;
+            const blockFee = value * 0.01;
 
-            // उपकर (मुद्रांक शुल्क का 12%)
-            const fivePercentOfTwelve = fivePercent * 0.12;
+            // उपकर (मुद्रांक शुल्क का 6%)
+            const surcharge = stampDuty * 0.06;
 
             // योग (eStamp)
-            const totalSum = fivePercent + onePercent + fivePercentOfTwelve;
+            const totalSum = stampDuty + blockFee + surcharge;
 
-            // Registration (हमेशा 500)
+            // रजिस्ट्रेशन शुल्क (हमेशा 500)
             const registrationFee = 500;
 
             // परिणाम दिखाएं
-            document.getElementById('fivePercent').textContent = fivePercent.toFixed(2);
-            document.getElementById('onePercent').textContent = onePercent.toFixed(2);
-            document.getElementById('fivePercentOfTwelve').textContent = fivePercentOfTwelve.toFixed(2);
+            document.getElementById('stampDuty').textContent = stampDuty.toFixed(2);
+            document.getElementById('blockFee').textContent = blockFee.toFixed(2);
+            document.getElementById('surcharge').textContent = surcharge.toFixed(2);
             document.getElementById('totalSum').textContent = totalSum.toFixed(2);
             document.getElementById('registrationFee').textContent = registrationFee.toFixed(2);
         } else {
             // अगर वैल्यू नहीं दर्ज की गई है, तो सभी फ़ील्ड्स खाली करें
-            document.getElementById('fivePercent').textContent = '';
-            document.getElementById('onePercent').textContent = '';
-            document.getElementById('fivePercentOfTwelve').textContent = '';
+            document.getElementById('stampDuty').textContent = '';
+            document.getElementById('blockFee').textContent = '';
+            document.getElementById('surcharge').textContent = '';
             document.getElementById('totalSum').textContent = '';
             document.getElementById('registrationFee').textContent = '';
         }
