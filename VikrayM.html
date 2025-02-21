@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>कैलकुलेटर</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        .container {
+            max-width: 300px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .highlight {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>कैलकुलेटर</h2>
+    <label for="value">वैल्यू दर्ज करें:</label>
+    <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
+
+    <div class="result">
+        <p>मुद्रांक शुल्क <span id="fourPercent"></span></p>
+        <p>ब्लाक शुल्क <span id="onePercent"></span></p>
+        <p>उपकर <span id="fourPercentOfTwelve"></span></p>
+        <p><strong>योग (eStamp): <span id="totalSum"></span></strong></p>
+        <p class="highlight">Registration 4%: <span id="fourPercentFee"></span></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('value').addEventListener('input', function() {
+        const value = parseFloat(this.value);
+        if (!isNaN(value)) {
+            const fourPercent = value * 0.04;
+            const onePercent = value * 0.01;
+            const fourPercentOfTwelve = fourPercent * 0.12;
+
+            // तीनों प्रतिशत का योग
+            const totalSum = fourPercent + onePercent + fourPercentOfTwelve;
+
+            // 4% फीस
+            const fourPercentFee = value * 0.04;
+
+            // परिणाम दिखाएं
+            document.getElementById('fourPercent').textContent = fourPercent.toFixed(2);
+            document.getElementById('onePercent').textContent = onePercent.toFixed(2);
+            document.getElementById('fourPercentOfTwelve').textContent = fourPercentOfTwelve.toFixed(2);
+            document.getElementById('totalSum').textContent = totalSum.toFixed(2);
+            document.getElementById('fourPercentFee').textContent = fourPercentFee.toFixed(2);
+        } else {
+            // अगर वैल्यू नहीं दर्ज की गई है, तो सभी फ़ील्ड्स खाली करें
+            document.getElementById('fourPercent').textContent = '';
+            document.getElementById('onePercent').textContent = '';
+            document.getElementById('fourPercentOfTwelve').textContent = '';
+            document.getElementById('totalSum').textContent = '';
+            document.getElementById('fourPercentFee').textContent = '';
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+/* बेसिक रीसेट और बॉडी स्टाइल */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    color: #333;
+    line-height: 1.6;
+}
+
+/* हेडर स्टाइल */
+header {
+    background: #4a90e2;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* नेविगेशन मेनू */
+nav {
+    background: #333;
+    padding: 10px;
+    text-align: center;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+}
+nav ul li {
+    margin: 0 15px;
+}
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+nav ul li a:hover {
+    color: #0ee069;
+}
+
+/* मुख्य कंटेंट */
+main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+main h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #4a90e2;
+    text-align: center;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+table td {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #ddd;
+    transition: background 0.3s ease;
+}
+table td a {
+    text-decoration: none;
+    color: #4a90e2;
+    font-size: 1.1rem;
+    display: block;
+}
+table td:hover {
+    background: #29ef33;
+}
+
+/* फुटर स्टाइल */
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 20px;
+}
+footer p {
+    margin: 5px 0;
+}
+footer a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* रिस्पॉन्सिव डिज़ाइन */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+    }
+    nav ul li {
+        margin: 10px 0;
+    }
+    table td {
+        display: block;
+        width: 100%;
+    }
+}
