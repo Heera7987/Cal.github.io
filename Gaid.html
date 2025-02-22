@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>गाइडलाइन</title>
+    <style>
+        /* Basic styling for dropdowns and radio buttons */
+        .dropdown-container {
+            margin: 20px;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .radio-container {
+            margin: 10px 0;
+        }
+        .radio-container label {
+            margin-right: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .hidden {
+            display: none;
+        }
+        .result-container {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            max-width: 800px;
+        }
+        .result-container h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <h1>गाइडलाइन 100%</h1>
+
+    <div class="dropdown-container">
+        <!-- District Dropdown -->
+        <label for="district">जिला (District):</label>
+        <select id="district" onchange="updateTehsil()">
+            <option value="">-- जिला चुनें --</option>
+            <option value="Bilaspur">बिलासपुर</option>
+            <option value="Mungeli">मुंगेली</option>
+        </select>
+
+        <!-- Tehsil Dropdown -->
+        <label for="tehsil">तहसील (Tehsil):</label>
+        <select id="tehsil" onchange="updateUrbanRural()">
+            <option value="">-- तहसील चुनें --</option>
+        </select>
+
+        <!-- Urban/Rural Radio Buttons -->
+        <div class="radio-container">
+            <label>शहरी/ग्रामीण (Urban/Rural):</label>
+            <label><input type="radio" id="urbanRadio" name="urbanRural" value="Urban" onchange="updateWardOrVillage()"> शहरी</label>
+            <label><input type="radio" id="ruralRadio" name="urbanRural" value="Rural" onchange="updateWardOrVillage()"> ग्रामीण</label>
+        </div>
+
+        <!-- Ward Dropdown (Hidden by default) -->
+        <div id="wardContainer" class="hidden">
+            <label for="ward">वार्ड (Ward):</label>
+            <select id="ward">
+                <option value="">-- वार्ड चुनें --</option>
+                <option value="Ward1">वार्ड 1</option>
+                <option value="Ward2">वार्ड 2</option>
+                <option value="Ward3">वार्ड 3</option>
+            </select>
+        </div>
+
+        <!-- Village Dropdown (Hidden by default) -->
+        <div id="villageContainer" class="hidden">
+            <label for="village">गाँव (Village):</label>
+            <select id="village">
+                <option value="">-- गाँव चुनें --</option>
+                <option value="Kanchanpur">कंचनपुर</option>
+                <option value="ChaurahaSinghanpur">चौराहा सिंघनपुर</option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button onclick="submitForm()">सबमिट करें</button>
+    </div>
+
+    <!-- Result Display Section -->
+    <div id="resultContainer" class="result-container hidden">
+        <h2>चयनित मान:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>जिला</th>
+                    <th>तहसील</th>
+                    <th>शहरी/ग्रामीण</th>
+                    <th>वार्ड/गाँव</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="resultDistrict"></td>
+                    <td id="resultTehsil"></td>
+                    <td id="resultUrbanRural"></td>
+                    <td id="resultWardVillage"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Urban Data Table -->
+        <div id="urbanDataTable" class="hidden">
+            <h2>शहरी डेटा:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>वार्ड</th>
+                        <th>जनसंख्या</th>
+                        <th>क्षेत्रफल (वर्ग किमी)</th>
+                    </tr>
+                </thead>
+                <tbody id="urbanTableBody">
+                    <!-- Urban data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Rural Data Table -->
+        <div id="ruralDataTable" class="hidden">
+            <h2>ग्रामीण डेटा:</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>क्रमांक</th>
+                        <th>प.ह.न. एवं मुख्यालय ग्राम का नाम</th>
+                        <th>ग्राम का नाम</th>
+                        <th>मूल्य प्रति हेक्टेयर (रू० में)</th>
+                        <th>मुख्य मार्ग पर स्थित भूमि</th>
+                        <th>सिंचित</th>
+                        <th>असिंचित</th>
+                        <th>500 व.मी. तक कृषि भूमि (मूल्य प्रति वर्गमीटर रू. में)</th>
+                        <th>सड़क से 20 मी. तक</th>
+                        <th>सड़क से 20 मी. के बाद</th>
+                    </tr>
+                </thead>
+                <tbody id="ruralTableBody">
+                    <!-- Rural data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Data for Tehsil, Urban Wards, and Villages
+        const data = {
+            Bilaspur: {
+                Tehsils: {
+                    Takhatpur: {
+                        Urban: ["Ward1", "Ward2", "Ward3"],
+                        Rural: ["Kanchanpur", "ChaurahaSinghanpur"],
+                    },
+                    Bilha: {
+                        Urban: ["Ward4", "Ward5", "Ward6"],
+                        Rural: ["Gaon4", "Gaon5", "Gaon6"],
+                    },
+                },
+            },
+            Mungeli: {
+                Tehsils: {
+                    Mungeli: {
+                        Urban: ["Ward7", "Ward8", "Ward9"],
+                        Rural: ["Gaon7", "Gaon8", "Gaon9"],
+                    },
+                    Lormi: {
+                        Urban: ["Ward10", "Ward11", "Ward12"],
+                        Rural: ["Gaon10", "Gaon11", "Gaon12"],
+                    },
+                },
+            },
+        };
+
+        // Urban Data
+        const urbanData = {
+            Ward1: {
+                Population: 5000,
+                Area: 2.5,
+            },
+            Ward2: {
+                Population: 6000,
+                Area: 3.0,
+            },
+            Ward3: {
+                Population: 4500,
+                Area: 2.0,
+            },
+        };
+
+        // Rural Data
+        const ruralData = {
+            Kanchanpur: [
+                {
+                    क्रमांक: 1,
+                    पहन: "1 कंचनपुर",
+                    ग्राम: "कंचनपुर",
+                    मूल्य_हेक्टेयर: 1458000,
+                    मुख्य_मार्ग: 926500,
+                    सिंचित: 524500,
+                    असिंचित: 590,
+                    कृषि_भूमि: 510,
+                    सड़क_20मी_तक: "-",
+                    सड़क_20मी_बाद: "-",
+                },
+            ],
+            ChaurahaSinghanpur: [
+                {
+                    क्रमांक: 2,
+                    पहन: "चौराहा सिंघनपुर",
+                    ग्राम: "चौराहा सिंघनपुर",
+                    मूल्य_हेक्टेयर: 1247500,
+                    मुख्य_मार्ग: 845000,
+                    सिंचित: 472500,
+                    असिंचित: 570,
+                    कृषि_भूमि: 510,
+                    सड़क_20मी_तक: "-",
+                    सड़क_20मी_बाद: "-",
+                },
+            ],
+        };
+
+        // Function to update Tehsil dropdown
+        function updateTehsil() {
+            const district = document.getElementById('district').value;
+            const tehsilDropdown = document.getElementById('tehsil');
+            tehsilDropdown.innerHTML = '<option value="">-- तहसील चुनें --</option>';
+
+            if (district && data[district]) {
+                const tehsils = Object.keys(data[district].Tehsils);
+                tehsils.forEach(tehsil => {
+                    const option = document.createElement('option');
+                    option.value = tehsil;
+                    option.textContent = tehsil;
+                    tehsilDropdown.appendChild(option);
+                });
+            }
+
+            // Reset Urban/Rural and dependent dropdowns
+            document.getElementById('urbanRadio').checked = false;
+            document.getElementById('ruralRadio').checked = false;
+            document.getElementById('wardContainer').classList.add('hidden');
+            document.getElementById('villageContainer').classList.add('hidden');
+        }
+
+        // Function to update Ward or Village dropdown
+        function updateWardOrVillage() {
+            const urbanChecked = document.getElementById('urbanRadio').checked;
+            const ruralChecked = document.getElementById('ruralRadio').checked;
+            const wardContainer = document.getElementById('wardContainer');
+            const villageContainer = document.getElementById('villageContainer');
+
+            if (urbanChecked) {
+                wardContainer.classList.remove('hidden');
+                villageContainer.classList.add('hidden');
+            } else if (ruralChecked) {
+                villageContainer.classList.remove('hidden');
+                wardContainer.classList.add('hidden');
+            } else {
+                wardContainer.classList.add('hidden');
+                villageContainer.classList.add('hidden');
+            }
+        }
+
+        // Function to handle form submission
+        function submitForm() {
+            const district = document.getElementById('district').value;
+            const tehsil = document.getElementById('tehsil').value;
+            const urbanChecked = document.getElementById('urbanRadio').checked;
+            const ruralChecked = document.getElementById('ruralRadio').checked;
+            const ward = document.getElementById('ward').value;
+            const village = document.getElementById('village').value;
+
+            if (!district || !tehsil || (!urbanChecked && !ruralChecked) || (urbanChecked && !ward) || (ruralChecked && !village)) {
+                alert('कृपया सभी फ़ील्ड भरें।');
+                return;
+            }
+
+            // Display selected values in the result container
+            document.getElementById('resultDistrict').textContent = district;
+            document.getElementById('resultTehsil').textContent = tehsil;
+            document.getElementById('resultUrbanRural').textContent = urbanChecked ? "शहरी" : "ग्रामीण";
+            document.getElementById('resultWardVillage').textContent = urbanChecked ? ward : village;
+
+            // Show the result container
+            document.getElementById('resultContainer').classList.remove('hidden');
+
+            // Populate Urban or Rural data table
+            if (urbanChecked) {
+                document.getElementById('urbanDataTable').classList.remove('hidden');
+                document.getElementById('ruralDataTable').classList.add('hidden');
+
+                const urbanTableBody = document.getElementById('urbanTableBody');
+                urbanTableBody.innerHTML = `
+                    <tr>
+                        <td>${ward}</td>
+                        <td>${urbanData[ward].Population}</td>
+                        <td>${urbanData[ward].Area}</td>
+                    </tr>
+                `;
+            } else if (ruralChecked) {
+                document.getElementById('ruralDataTable').classList.remove('hidden');
+                document.getElementById('urbanDataTable').classList.add('hidden');
+
+                const ruralTableBody = document.getElementById('ruralTableBody');
+                ruralTableBody.innerHTML = "";
+
+                const villageData = ruralData[village];
+                if (villageData) {
+                    villageData.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.क्रमांक}</td>
+                            <td>${row.पहन}</td>
+                            <td>${row.ग्राम}</td>
+                            <td>${row.मूल्य_हेक्टेयर}</td>
+                            <td>${row.मुख्य_मार्ग}</td>
+                            <td>${row.सिंचित}</td>
+                            <td>${row.असिंचित}</td>
+                            <td>${row.कृषि_भूमि}</td>
+                            <td>${row.सड़क_20मी_तक}</td>
+                            <td>${row.सड़क_20मी_बाद}</td>
+                        `;
+                        ruralTableBody.appendChild(tr);
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
