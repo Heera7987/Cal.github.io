@@ -4,33 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>कैलकुलेटर</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
-        }
-        .container {
-            max-width: 300px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            box-sizing: border-box;
-        }
-        .result {
-            margin-top: 20px;
-        }
-        .highlight {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -43,55 +17,14 @@
     <input type="number" id="value2" placeholder="दूसरी वैल्यू दर्ज करें">
 
     <div class="result">
-        <p>मुद्रांक शुल्क : <span id="fivePercent"></span></p>
+        <p>मुद्रांक शुल्क : <span id="fivePercent">0</span></p>
         <p>ब्लाक शुल्क: <span id="onePercent">0</span></p>
         <p>उपकर: <span id="fivePercentOfTwelve">0</span></p>
-        <p><strong>योग (eStamp): <span id="totalSum"></span></strong></p>
-        <p class="highlight">Registration 4%: <span id="fourPercentFee"></span></p>
+        <p><strong>योग (eStamp): <span id="totalSum">0</span></strong></p>
+        <p class="highlight">Registration 4%: <span id="fourPercentFee">0</span></p>
     </div>
 </div>
 
-<script>
-    document.getElementById('value1').addEventListener('input', calculate);
-    document.getElementById('value2').addEventListener('input', calculate);
-
-    function calculate() {
-        const value1 = parseFloat(document.getElementById('value1').value);
-        const value2 = parseFloat(document.getElementById('value2').value);
-
-        if (!isNaN(value1) && !isNaN(value2)) {
-            const difference = Math.abs(value1 - value2); // दोनों वैल्यू में अंतर
-
-            // मुद्रांक शुल्क (5%)
-            const fivePercent = difference * 0.05;
-
-            // ब्लाक शुल्क और उपकर हमेशा 0
-            const onePercent = 0;
-            const fivePercentOfTwelve = 0;
-
-            // योग (eStamp)
-            const totalSum = fivePercent + onePercent + fivePercentOfTwelve;
-
-            // 4% फीस (दोनों वैल्यू में से जो बड़ी है, उस पर)
-            const maxValue = Math.max(value1, value2);
-            const fourPercentFee = maxValue * 0.04;
-
-            // परिणाम दिखाएं
-            document.getElementById('fivePercent').textContent = fivePercent.toFixed(2);
-            document.getElementById('onePercent').textContent = onePercent.toFixed(2);
-            document.getElementById('fivePercentOfTwelve').textContent = fivePercentOfTwelve.toFixed(2);
-            document.getElementById('totalSum').textContent = totalSum.toFixed(2);
-            document.getElementById('fourPercentFee').textContent = fourPercentFee.toFixed(2);
-        } else {
-            // अगर वैल्यू नहीं दर्ज की गई है, तो सभी फ़ील्ड्स खाली करें
-            document.getElementById('fivePercent').textContent = '';
-            document.getElementById('onePercent').textContent = '0';
-            document.getElementById('fivePercentOfTwelve').textContent = '0';
-            document.getElementById('totalSum').textContent = '';
-            document.getElementById('fourPercentFee').textContent = '';
-        }
-    }
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
