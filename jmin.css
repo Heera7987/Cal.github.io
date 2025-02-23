@@ -1,0 +1,151 @@
+/* बेसिक रीसेट और बॉडी स्टाइल */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #a8e6cf, #dcedc1, #ffd3b6);
+    background-size: 200% 200%;
+    animation: gradientBackground 10s ease infinite;
+    color: #333;
+}
+
+/* ग्रेडिएंट बैकग्राउंड एनिमेशन */
+@keyframes gradientBackground {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* कंटेनर स्टाइल */
+.container {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* हेडिंग स्टाइल */
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #444;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* लेबल स्टाइल */
+label {
+    display: block;
+    margin: 15px 0 5px;
+    font-size: 16px;
+    color: #555;
+}
+
+/* इनपुट और सेलेक्ट स्टाइल */
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: #a8e6cf;
+    box-shadow: 0 0 8px rgba(168, 230, 207, 0.3);
+    outline: none;
+}
+
+/* बटन स्टाइल */
+button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #dcedc1, #a8e6cf);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* रिजल्ट बॉक्स स्टाइल */
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    font-size: 18px;
+    color: #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.5s ease-in-out;
+}
+
+/* एनिमेशन */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* मोबाइल रिस्पॉन्सिवनेस */
+@media (max-width: 480px) {
+    h2 {
+        font-size: 20px;
+    }
+
+    label {
+        font-size: 14px;
+    }
+
+    input, select, button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .result {
+        font-size: 16px;
+        padding: 10px;
+    }
+}
