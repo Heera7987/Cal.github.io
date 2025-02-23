@@ -1,8 +1,10 @@
+/* General Styles */
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    color: #333;
 }
 
 header {
@@ -12,53 +14,65 @@ header {
     text-align: center;
 }
 
+nav {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
 nav ul {
     list-style-type: none;
-    padding: 0;
-    background-color: #333;
-    overflow: hidden;
     margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* लिंक्स को एक लाइन में रखने के लिए */
 }
 
 nav ul li {
-    float: left;
+    margin: 0 15px;
 }
 
 nav ul li a {
-    display: block;
     color: white;
-    text-align: center;
-    padding: 14px 20px;
     text-decoration: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
 }
 
 nav ul li a:hover {
-    background-color: #575757;
+    text-decoration: underline;
+}
+
+main {
+    padding: 20px;
 }
 
 .calculator-links {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .link-item {
-    background-color: #fff;
+    background-color: white;
     padding: 15px;
-    border-radius: 8px;
+    border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 200px;
-    text-align: center;
 }
 
 .link-item a {
-    text-decoration: none;
     color: #333;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
 }
 
-.link-item a:hover {
-    color: #4CAF50;
+.link-item a i {
+    margin-right: 10px;
 }
 
 footer {
@@ -66,26 +80,55 @@ footer {
     color: white;
     text-align: center;
     padding: 10px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+    margin-top: 20px;
 }
 
-.social-links a {
+footer p {
+    margin: 5px 0;
+}
+
+footer .social-links {
+    margin-top: 10px;
+}
+
+footer .social-links a {
     color: white;
     margin: 0 10px;
-    text-decoration: none;
+    font-size: 20px;
 }
 
-.social-links a:hover {
+footer .social-links a:hover {
     color: #4CAF50;
 }
 
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .calculator-links {
-        flex-direction: column;
+    nav ul {
+        flex-direction: row; /* लिंक्स को एक लाइन में रखने के लिए */
+        justify-content: space-around; /* लिंक्स के बीच समान स्पेस */
     }
+
+    nav ul li {
+        margin: 0; /* मार्जिन को हटाएं */
+    }
+
+    .link-item a {
+        font-size: 14px;
+    }
+
+    header h1 {
+        font-size: 24px;
+    }
+
+    main h1 {
+        font-size: 22px;
+    }
+
+    .calculator-links {
+        gap: 10px;
+    }
+
     .link-item {
-        width: 100%;
+        padding: 10px;
     }
 }
