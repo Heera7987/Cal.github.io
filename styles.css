@@ -28,7 +28,7 @@ header h1 {
     position: relative;
     display: inline-block;
     white-space: nowrap; /* टेक्स्ट को एक लाइन में रखें */
-    animation: slideText 8s linear infinite; /* टेक्स्ट स्लाइडिंग एनिमेशन */
+    animation: slideText 13s linear infinite; /* टेक्स्ट स्लाइडिंग एनिमेशन */
 }
 
 /* टेक्स्ट स्लाइडिंग एनिमेशन */
