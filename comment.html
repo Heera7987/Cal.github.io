@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Comment Box</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>User Comments</h1>
+        <form id="commentForm">
+            <label for="name">नाम:</label><br>
+            <input type="text" id="name" name="name" required><br><br>
+            <label for="comment">टिप्पणी:</label><br>
+            <textarea id="comment" name="comment" rows="4" cols="50" required></textarea><br><br>
+            <button type="submit">टिप्पणी सबमिट करें</button>
+            <span id="totalComments">कुल टिप्पणियाँ: 0</span>
+        </form>
+
+        <div id="commentsSection">
+            <h2>टिप्पणियाँ:</h2>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
