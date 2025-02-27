@@ -1,5 +1,5 @@
 let totalComments = 0; // Total comments counter
-const adminPassword = "admin123"; // Admin secret key
+const adminPassword = "0099"; // Admin secret key
 
 document.getElementById('commentForm').addEventListener('submit', function(event) {
     event.preventDefault();
