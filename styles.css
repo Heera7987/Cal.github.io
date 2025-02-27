@@ -38,7 +38,7 @@ header h1 {
 /* टेक्स्ट स्लाइडिंग एनिमेशन */
 @keyframes slideText {
     0% {
-        transform: translateX(40%); /* शुरुआत में दाईं ओर छिपा हुआ */
+        transform: translateX(25%); /* शुरुआत में दाईं ओर छिपा हुआ */
     }
     100% {
         transform: translateX(-100%); /* बाईं ओर चला जाए */
