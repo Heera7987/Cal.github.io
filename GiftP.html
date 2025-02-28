@@ -7,28 +7,82 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 50px;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white; /* बाहरी एरिया को व्हाइट किया गया है */
         }
         .container {
-            max-width: 300px;
-            margin: auto;
-            padding: 20px;
+            max-width: 350px;
+            width: 100%;
+            padding: 25px;
             border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            background: #e6f7ff; /* हल्का नीला बैकग्राउंड */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* सॉफ्ट शैडो */
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333; /* डार्क टेक्स्ट कलर */
         }
         input[type="number"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: white; /* इनपुट फील्ड का बैकग्राउंड व्हाइट */
+            color: #333; /* डार्क टेक्स्ट कलर */
+            font-size: 16px;
+            outline: none;
+        }
+        input[type="number"]::placeholder {
+            color: #999; /* प्लेसहोल्डर कलर */
         }
         .result {
             margin-top: 20px;
+            color: #333; /* डार्क टेक्स्ट कलर */
+            font-size: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* दो कॉलम */
+            gap: 10px;
+            text-align: left;
+        }
+        .result p {
+            margin: 0;
+            padding: 5px 0;
         }
         .highlight {
-            color: red;
+            color: #ff6f61; /* रेड कलर */
             font-weight: bold;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ff6f61, #ffcc00); /* ऑरेंज-येलो ग्रेडिएंट */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #ffcc00, #ff6f61); /* होवर पर ग्रेडिएंट रिवर्स */
+        }
+        .reset-button {
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* पर्पल-ब्लू ग्रेडिएंट */
+        }
+        .reset-button:hover {
+            background: linear-gradient(135deg, #2575fc, #6a11cb); /* होवर पर ग्रेडिएंट रिवर्स */
         }
     </style>
 </head>
@@ -39,18 +93,26 @@
     <label for="value">परिवार के मध्य:</label>
     <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
 
+    <button onclick="calculate()">गणना करें</button>
+    <button class="reset-button" onclick="resetCalculator()">रिसेट</button>
+
     <div class="result">
-        <p>मुद्रांक शुल्क <span id="stampDuty"></span></p>
-        <p>ब्लाक शुल्क <span id="blockFee"></span></p>
-        <p>उपकर <span id="surcharge"></span></p>
-        <p><strong>योग (eStamp): <span id="totalSum"></span></strong></p>
-        <p class="highlight">रजिस्ट्रेशन शुल्क: <span id="registrationFee"></span></p>
+        <p>मुद्रांक शुल्क:</p>
+        <p><span id="stampDuty"></span></p>
+        <p>ब्लाक शुल्क:</p>
+        <p><span id="blockFee"></span></p>
+        <p>उपकर:</p>
+        <p><span id="surcharge"></span></p>
+        <p><strong>योग (eStamp):</strong></p>
+        <p><strong><span id="totalSum"></span></strong></p>
+        <p class="highlight">रजिस्ट्रेशन शुल्क:</p>
+        <p class="highlight"><span id="registrationFee"></span></p>
     </div>
 </div>
 
 <script>
-    document.getElementById('value').addEventListener('input', function() {
-        const value = parseFloat(this.value);
+    function calculate() {
+        const value = parseFloat(document.getElementById('value').value);
         if (!isNaN(value)) {
             // मुद्रांक शुल्क 0.5%
             const stampDuty = value * 0.005;
@@ -75,13 +137,19 @@
             document.getElementById('registrationFee').textContent = registrationFee.toFixed(2);
         } else {
             // अगर वैल्यू नहीं दर्ज की गई है, तो सभी फ़ील्ड्स खाली करें
-            document.getElementById('stampDuty').textContent = '';
-            document.getElementById('blockFee').textContent = '';
-            document.getElementById('surcharge').textContent = '';
-            document.getElementById('totalSum').textContent = '';
-            document.getElementById('registrationFee').textContent = '';
+            resetCalculator();
         }
-    });
+    }
+
+    function resetCalculator() {
+        // इनपुट और सभी रिजल्ट फ़ील्ड्स को रिसेट करें
+        document.getElementById('value').value = '';
+        document.getElementById('stampDuty').textContent = '';
+        document.getElementById('blockFee').textContent = '';
+        document.getElementById('surcharge').textContent = '';
+        document.getElementById('totalSum').textContent = '';
+        document.getElementById('registrationFee').textContent = '';
+    }
 </script>
 
 </body>
