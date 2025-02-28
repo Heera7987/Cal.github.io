@@ -30,7 +30,7 @@
             margin-top: 15px;
             color: #004080; /* डार्क ब्लू टेक्स्ट */
         }
-        input[type="number"] {
+        input[type="number"], select {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
@@ -40,7 +40,7 @@
             font-size: 16px;
             background-color: #ffffff; /* इनपुट बॉक्स का सफेद बैकग्राउंड */
         }
-        input[type="number"]:focus {
+        input[type="number"]:focus, select:focus {
             border-color: #004080; /* फोकस पर डार्क ब्लू बॉर्डर */
             outline: none;
         }
@@ -87,42 +87,59 @@
 
 <div class="container">
     <h2>कैलकुलेटर</h2>
-    <label for="value">महिला के लिए:</label>
-    <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
-    <button onclick="calculate()">गणना करें</button>
-    <button onclick="resetForm()">Reset</button> <!-- गाड़ना बटन जोड़ा गया -->
 
+    <!-- लिंग चयन ड्रॉपडाउन -->
+    <label for="gender">लिंग चुनें:</label>
+    <select id="gender">
+        <option value="female">महिला</option>
+        <option value="male">पुरुष</option>
+    </select>
+
+    <!-- मूल्य इनपुट -->
+    <label for="value">मूल्य दर्ज करें:</label>
+    <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
+
+    <!-- गणना बटन -->
+    <button onclick="calculate()">गणना करें</button>
+
+    <!-- गाड़ना (Reset) बटन -->
+    <button onclick="resetForm()">Reset</button>
+
+    <!-- परिणाम बॉक्स -->
     <div class="result" id="result">
-        <p>मुद्रांक शुल्क <span id="fourPercent"></span></p>
-        <p>ब्लाक शुल्क <span id="onePercent"></span></p>
-        <p>उपकर <span id="fourPercentOfTwelve"></span></p>
+        <p>मुद्रांक शुल्क <span id="stampDuty"></span></p>
+        <p>ब्लाक शुल्क <span id="blockFee"></span></p>
+        <p>उपकर <span id="surcharge"></span></p>
         <p><strong>योग (eStamp): <span id="totalSum"></span></strong></p>
-        <p class="highlight">Registration 4%: <span id="fourPercentFee"></span></p>
+        <p class="highlight">Registration 4%: <span id="registrationFee"></span></p>
     </div>
 </div>
 
 <script>
     function calculate() {
-        const value = parseFloat(document.getElementById('value').value);
+        const gender = document.getElementById('gender').value; // ड्रॉपडाउन से लिंग चुनें
+        const value = parseFloat(document.getElementById('value').value); // मूल्य इनपुट
+
         const resultDiv = document.getElementById('result');
 
         if (!isNaN(value)) {
-            const fourPercent = value * 0.04;
-            const onePercent = value * 0.01;
-            const fourPercentOfTwelve = fourPercent * 0.12;
+            // मुद्रांक शुल्क (महिला: 4%, पुरुष: 5%)
+            const stampDuty = (gender === 'female') ? value * 0.04 : value * 0.05;
+            const blockFee = value * 0.01; // ब्लाक शुल्क (1%)
+            const surcharge = stampDuty * 0.12; // उपकर (मुद्रांक शुल्क का 12%)
 
-            // तीनों प्रतिशत का योग
-            const totalSum = fourPercent + onePercent + fourPercentOfTwelve;
+            // योग (eStamp)
+            const totalSum = stampDuty + blockFee + surcharge;
 
-            // 4% फीस
-            const fourPercentFee = value * 0.04;
+            // रजिस्ट्रेशन फीस (4%)
+            const registrationFee = value * 0.04;
 
             // परिणाम दिखाएं
-            document.getElementById('fourPercent').textContent = fourPercent.toFixed(2);
-            document.getElementById('onePercent').textContent = onePercent.toFixed(2);
-            document.getElementById('fourPercentOfTwelve').textContent = fourPercentOfTwelve.toFixed(2);
+            document.getElementById('stampDuty').textContent = stampDuty.toFixed(2);
+            document.getElementById('blockFee').textContent = blockFee.toFixed(2);
+            document.getElementById('surcharge').textContent = surcharge.toFixed(2);
             document.getElementById('totalSum').textContent = totalSum.toFixed(2);
-            document.getElementById('fourPercentFee').textContent = fourPercentFee.toFixed(2);
+            document.getElementById('registrationFee').textContent = registrationFee.toFixed(2);
 
             // एनिमेशन जोड़ें
             resultDiv.classList.add('fade-in');
@@ -132,14 +149,14 @@
         }
     }
 
-    // गाड़ना (Reset) फ़ंक्शन
+    // गाड़ना (Reset) फ़ंक्शन
     function resetForm() {
-        document.getElementById('value').value = ''; // इनपुट फ़ील्ड खाली करें
-        document.getElementById('fourPercent').textContent = '';
-        document.getElementById('onePercent').textContent = '';
-        document.getElementById('fourPercentOfTwelve').textContent = '';
+        document.getElementById('value').value = ''; // मूल्य इनपुट फ़ील्ड खाली करें
+        document.getElementById('stampDuty').textContent = '';
+        document.getElementById('blockFee').textContent = '';
+        document.getElementById('surcharge').textContent = '';
         document.getElementById('totalSum').textContent = '';
-        document.getElementById('fourPercentFee').textContent = '';
+        document.getElementById('registrationFee').textContent = '';
         document.getElementById('result').classList.remove('fade-in'); // एनिमेशन हटाएं
     }
 </script>
