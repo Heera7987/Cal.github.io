@@ -8,27 +8,78 @@
         body {
             font-family: Arial, sans-serif;
             margin: 50px;
+            background-color: #e6f0ff; /* हल्का नीला बैकग्राउंड */
+            color: #333;
         }
         .container {
-            max-width: 300px;
+            max-width: 350px;
             margin: auto;
-            padding: 20px;
+            padding: 25px;
             border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            background-color: #b3d9ff; /* गहरा नीला बैकग्राउंड */
+        }
+        h2 {
+            text-align: center;
+            color: #004080; /* डार्क ब्लू टेक्स्ट */
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color: #004080; /* डार्क ब्लू टेक्स्ट */
         }
         input[type="number"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #ffffff; /* इनपुट बॉक्स का सफेद बैकग्राउंड */
+        }
+        input[type="number"]:focus {
+            border-color: #004080; /* फोकस पर डार्क ब्लू बॉर्डर */
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #004080; /* डार्क ब्लू बटन */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #00264d; /* होवर पर और गहरा नीला */
         }
         .result {
-            margin-top: 20px;
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #ffffff; /* रिजल्ट बॉक्स का सफेद बैकग्राउंड */
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .result p {
+            margin: 10px 0;
+            color: #004080; /* डार्क ब्लू टेक्स्ट */
         }
         .highlight {
-            color: red;
+            color: #e74c3c; /* हाइलाइट के लिए लाल रंग */
             font-weight: bold;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -38,8 +89,9 @@
     <h2>कैलकुलेटर</h2>
     <label for="value">महिला के लिए:</label>
     <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
+    <button onclick="calculate()">गणना करें</button>
 
-    <div class="result">
+    <div class="result" id="result">
         <p>मुद्रांक शुल्क <span id="fourPercent"></span></p>
         <p>ब्लाक शुल्क <span id="onePercent"></span></p>
         <p>उपकर <span id="fourPercentOfTwelve"></span></p>
@@ -49,8 +101,10 @@
 </div>
 
 <script>
-    document.getElementById('value').addEventListener('input', function() {
-        const value = parseFloat(this.value);
+    function calculate() {
+        const value = parseFloat(document.getElementById('value').value);
+        const resultDiv = document.getElementById('result');
+
         if (!isNaN(value)) {
             const fourPercent = value * 0.04;
             const onePercent = value * 0.01;
@@ -68,6 +122,9 @@
             document.getElementById('fourPercentOfTwelve').textContent = fourPercentOfTwelve.toFixed(2);
             document.getElementById('totalSum').textContent = totalSum.toFixed(2);
             document.getElementById('fourPercentFee').textContent = fourPercentFee.toFixed(2);
+
+            // एनिमेशन जोड़ें
+            resultDiv.classList.add('fade-in');
         } else {
             // अगर वैल्यू नहीं दर्ज की गई है, तो सभी फ़ील्ड्स खाली करें
             document.getElementById('fourPercent').textContent = '';
@@ -75,8 +132,9 @@
             document.getElementById('fourPercentOfTwelve').textContent = '';
             document.getElementById('totalSum').textContent = '';
             document.getElementById('fourPercentFee').textContent = '';
+            resultDiv.classList.remove('fade-in');
         }
-    });
+    }
 </script>
 
 </body>
