@@ -8,26 +8,61 @@
         body {
             font-family: Arial, sans-serif;
             margin: 50px;
+            background: linear-gradient(135deg, #f6d365, #fda085); /* यूनिक ग्रेडिएंट बैकग्राउंड */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         .container {
             max-width: 300px;
-            margin: auto;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            background-color: lightblue; /* कैलकुलेटर का हल्का ब्लू बैकग्राउंड */
+            text-align: center;
         }
         input[type="number"] {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #ffffff; /* इनपुट फ़ील्ड का सफेद बैकग्राउंड */
         }
         .result {
             margin-top: 20px;
         }
         .highlight {
             color: red;
+            font-weight: bold;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result p {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .result span {
+            font-size: 1.2em;
+        }
+        .result strong {
             font-weight: bold;
         }
     </style>
@@ -39,18 +74,21 @@
     <label for="value">परिवार के बाहर:</label>
     <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
 
+    <button onclick="calculate()">गणना करें</button>
+    <button onclick="resetCalculator()">रिसेट</button>
+
     <div class="result">
         <p>मुद्रांक शुल्क <span id="fivePercent"></span></p>
         <p>ब्लाक शुल्क <span id="onePercent"></span></p>
         <p>उपकर <span id="fivePercentOfTwelve"></span></p>
-        <p><strong>योग (eStamp): <span id="totalSum"></span></strong></p>
+        <p><strong>योग (eStamp):</strong> <span id="totalSum"></span></p>
         <p class="highlight">Registration 4%: <span id="fourPercentFee"></span></p>
     </div>
 </div>
 
 <script>
-    document.getElementById('value').addEventListener('input', function() {
-        const value = parseFloat(this.value);
+    function calculate() {
+        const value = parseFloat(document.getElementById('value').value);
         if (!isNaN(value)) {
             const fivePercent = value * 0.05;
             const onePercent = value * 0.01;
@@ -70,13 +108,18 @@
             document.getElementById('fourPercentFee').textContent = fourPercentFee.toFixed(2);
         } else {
             // अगर वैल्यू नहीं दर्ज की गई है, तो सभी फ़ील्ड्स खाली करें
-            document.getElementById('fivePercent').textContent = '';
-            document.getElementById('onePercent').textContent = '';
-            document.getElementById('fivePercentOfTwelve').textContent = '';
-            document.getElementById('totalSum').textContent = '';
-            document.getElementById('fourPercentFee').textContent = '';
+            resetCalculator();
         }
-    });
+    }
+
+    function resetCalculator() {
+        document.getElementById('value').value = '';
+        document.getElementById('fivePercent').textContent = '';
+        document.getElementById('onePercent').textContent = '';
+        document.getElementById('fivePercentOfTwelve').textContent = '';
+        document.getElementById('totalSum').textContent = '';
+        document.getElementById('fourPercentFee').textContent = '';
+    }
 </script>
 
 </body>
