@@ -8,27 +8,88 @@
         body {
             font-family: Arial, sans-serif;
             margin: 50px;
+            background-color: #e6f0ff; /* हल्का नीला बैकग्राउंड */
+            color: #333;
         }
         .container {
-            max-width: 300px;
+            max-width: 350px;
             margin: auto;
-            padding: 20px;
+            padding: 25px;
             border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            background-color: #b3d9ff; /* गहरा नीला बैकग्राउंड */
+        }
+        h2 {
+            text-align: center;
+            color: #004080; /* डार्क ब्लू टेक्स्ट */
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color: #004080; /* डार्क ब्लू टेक्स्ट */
         }
         input[type="number"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #ffffff; /* इनपुट बॉक्स का सफेद बैकग्राउंड */
+        }
+        input[type="number"]:focus {
+            border-color: #004080; /* फोकस पर डार्क ब्लू बॉर्डर */
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #004080; /* डार्क ब्लू बटन */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #00264d; /* होवर पर और गहरा नीला */
         }
         .result {
-            margin-top: 20px;
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #ffffff; /* रिजल्ट बॉक्स का सफेद बैकग्राउंड */
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .result p {
+            margin: 15px 0; /* प्रत्येक आइटम के बीच में दूरी */
+            color: #004080; /* डार्क ब्लू टेक्स्ट */
         }
         .highlight {
-            color: red;
+            color: #e74c3c; /* हाइलाइट के लिए लाल रंग */
             font-weight: bold;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fee-item {
+            display: flex;
+            justify-content: space-between; /* टेक्स्ट और नंबर को अलग-अलग साइड में रखें */
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee; /* हल्की सी लाइन जोड़ी गई है */
+        }
+        .fee-item:last-child {
+            border-bottom: none; /* आखिरी आइटम के नीचे लाइन नहीं */
         }
     </style>
 </head>
@@ -39,18 +100,42 @@
     <label for="value">परिवार के बाहर:</label>
     <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
 
-    <div class="result">
-        <p>मुद्रांक शुल्क <span id="stampDuty"></span></p>
-        <p>ब्लाक शुल्क <span id="blockFee"></span></p>
-        <p>उपकर <span id="surcharge"></span></p>
-        <p><strong>योग (eStamp): <span id="totalSum"></span></strong></p>
-        <p class="highlight">Registration 4%: <span id="registrationFee"></span></p>
+    <!-- गणना बटन -->
+    <button onclick="calculate()">गणना करें</button>
+
+    <!-- गाड़ना (Reset) बटन -->
+    <button onclick="resetForm()">Reset</button>
+
+    <!-- परिणाम बॉक्स -->
+    <div class="result" id="result">
+        <div class="fee-item">
+            <span>मुद्रांक शुल्क:</span>
+            <span id="stampDuty"></span>
+        </div>
+        <div class="fee-item">
+            <span>ब्लाक शुल्क:</span>
+            <span id="blockFee"></span>
+        </div>
+        <div class="fee-item">
+            <span>उपकर:</span>
+            <span id="surcharge"></span>
+        </div>
+        <div class="fee-item">
+            <span><strong>योग (eStamp):</strong></span>
+            <span id="totalSum"></span>
+        </div>
+        <div class="fee-item highlight">
+            <span>रजिस्ट्रेशन (4%):</span>
+            <span id="registrationFee"></span>
+        </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('value').addEventListener('input', function() {
-        const value = parseFloat(this.value);
+    function calculate() {
+        const value = parseFloat(document.getElementById('value').value); // मूल्य इनपुट
+        const resultDiv = document.getElementById('result');
+
         if (!isNaN(value)) {
             // मुद्रांक शुल्क 2%
             const stampDuty = value * 0.02;
@@ -73,15 +158,25 @@
             document.getElementById('surcharge').textContent = surcharge.toFixed(2);
             document.getElementById('totalSum').textContent = totalSum.toFixed(2);
             document.getElementById('registrationFee').textContent = registrationFee.toFixed(2);
+
+            // एनिमेशन जोड़ें
+            resultDiv.classList.add('fade-in');
         } else {
             // अगर वैल्यू नहीं दर्ज की गई है, तो सभी फ़ील्ड्स खाली करें
-            document.getElementById('stampDuty').textContent = '';
-            document.getElementById('blockFee').textContent = '';
-            document.getElementById('surcharge').textContent = '';
-            document.getElementById('totalSum').textContent = '';
-            document.getElementById('registrationFee').textContent = '';
+            resetForm();
         }
-    });
+    }
+
+    // गाड़ना (Reset) फ़ंक्शन
+    function resetForm() {
+        document.getElementById('value').value = ''; // मूल्य इनपुट फ़ील्ड खाली करें
+        document.getElementById('stampDuty').textContent = '';
+        document.getElementById('blockFee').textContent = '';
+        document.getElementById('surcharge').textContent = '';
+        document.getElementById('totalSum').textContent = '';
+        document.getElementById('registrationFee').textContent = '';
+        document.getElementById('result').classList.remove('fade-in'); // एनिमेशन हटाएं
+    }
 </script>
 
 </body>
