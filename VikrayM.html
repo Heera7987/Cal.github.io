@@ -106,8 +106,12 @@
     </select>
 
     <!-- मूल्य इनपुट -->
-    <label for="value">मूल्य दर्ज करें:</label>
+    <label for="value">बैनामा कीमत / प्रति फल की राशि दर्ज करे:</label>
     <input type="number" id="value" placeholder="वैल्यू दर्ज करें">
+
+    <!-- सरकारी मूल्य इनपुट -->
+    <label for="governmentRate">बाजार मूल्य गाइडलाइन के अनुसार दर्ज करे :</label>
+    <input type="number" id="governmentRate" placeholder="सरकारी मूल्य दर्ज करें">
 
     <!-- गणना बटन -->
     <button onclick="calculate()">गणना करें</button>
@@ -143,21 +147,25 @@
 <script>
     function calculate() {
         const gender = document.getElementById('gender').value; // ड्रॉपडाउन से लिंग चुनें
-        const value = parseFloat(document.getElementById('value').value); // मूल्य इनपुट
+        const value = parseFloat(document.getElementById('value').value); // बैनामा कीमत
+        const governmentRate = parseFloat(document.getElementById('governmentRate').value); // सरकारी मूल्य
 
         const resultDiv = document.getElementById('result');
 
-        if (!isNaN(value)) {
+        if (!isNaN(value) && !isNaN(governmentRate)) {
+            // बड़ा मूल्य चुनें (बैनामा कीमत या सरकारी मूल्य)
+            const higherValue = Math.max(value, governmentRate);
+
             // मुद्रांक शुल्क (महिला: 4%, पुरुष: 5%)
-            const stampDuty = (gender === 'female') ? value * 0.04 : value * 0.05;
-            const blockFee = value * 0.01; // ब्लाक शुल्क (1%)
+            const stampDuty = (gender === 'female') ? higherValue * 0.04 : higherValue * 0.05;
+            const blockFee = higherValue * 0.01; // ब्लाक शुल्क (1%)
             const surcharge = stampDuty * 0.12; // उपकर (मुद्रांक शुल्क का 12%)
 
             // योग (eStamp)
             const totalSum = stampDuty + blockFee + surcharge;
 
             // रजिस्ट्रेशन फीस (4%)
-            const registrationFee = value * 0.04;
+            const registrationFee = governmentRate * 0.04;
 
             // परिणाम दिखाएं
             document.getElementById('stampDuty').textContent = stampDuty.toFixed(2);
@@ -176,7 +184,8 @@
 
     // गाड़ना (Reset) फ़ंक्शन
     function resetForm() {
-        document.getElementById('value').value = ''; // मूल्य इनपुट फ़ील्ड खाली करें
+        document.getElementById('value').value = ''; // बैनामा कीमत इनपुट फ़ील्ड खाली करें
+        document.getElementById('governmentRate').value = ''; // सरकारी मूल्य इनपुट फ़ील्ड खाली करें
         document.getElementById('stampDuty').textContent = '';
         document.getElementById('blockFee').textContent = '';
         document.getElementById('surcharge').textContent = '';
