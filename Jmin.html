@@ -9,33 +9,59 @@
 <body>
 
 <div class="container">
-    <h2>जमीन मापक कैलकुलेटर</h2>
-    <label for="value">मान दर्ज करें:</label>
-    <input type="number" id="value" placeholder="मान दर्ज करें">
-
-    <label for="fromUnit">से:</label>
-    <select id="fromUnit">
-        <option value="dismil">डिसमिल</option>
-        <option value="sqft">वर्ग फीट</option>
-        <option value="sqm">वर्ग मीटर</option>
-        <option value="hectare">हेक्टेयर</option>
-        <option value="acre">एकड़</option>
-    </select>
-
-    <label for="toUnit">को:</label>
-    <select id="toUnit">
-        <option value="dismil">डिसमिल</option>
-        <option value="sqft">वर्ग फीट</option>
-        <option value="sqm">वर्ग मीटर</option>
-        <option value="hectare">हेक्टेयर</option>
-        <option value="acre">एकड़</option>
-    </select>
-
-    <button onclick="convert()">परिवर्तित करें</button>
-
-    <div class="result" id="result"></div>
-</div>
+        <h1>📏 क्षेत्र माप रूपांतरण टूल</h1>
+        
+        <div class="input-group">
+            <label for="value">मान दर्ज करें:</label>
+            <input type="number" id="value" placeholder="उदाहरण: 100" step="any" min="0">
+        </div>
+        
+        <div class="unit-selectors">
+            <div class="unit-selector">
+                <label for="fromUnit">इकाई से:</label>
+                <select id="fromUnit">
+                    <option value="dismil">डिसमिल</option>
+                    <option value="sqft">वर्ग फीट</option>
+                    <option value="sqm" selected>वर्ग मीटर</option>
+                    <option value="hectare">हेक्टेयर</option>
+                    <option value="acre">एकड़</option>
+                </select>
+            </div>
+            
+            <div class="unit-selector">
+                <label for="toUnit">इकाई में:</label>
+                <select id="toUnit">
+                    <option value="dismil">डिसमिल</option>
+                    <option value="sqft">वर्ग फीट</option>
+                    <option value="sqm">वर्ग मीटर</option>
+                    <option value="hectare" selected>हेक्टेयर</option>
+                    <option value="acre">एकड़</option>
+                </select>
+            </div>
+        </div>
+        
+        <button class="convert-btn" onclick="convert()">🔄 रूपांतरण करें</button>
+        
+        <div class="result-container">
+            <div id="result">परिणाम यहाँ दिखाई देगा...</div>
+        </div>
+        
+        <div class="unit-info">
+            <h3>इकाई जानकारी:</h3>
+            <ul>
+                <li>1 डिसमिल = 435.6 वर्ग फीट</li>
+                <li>1 वर्ग फीट = 0.092903 वर्ग मीटर</li>
+                <li>1 वर्ग मीटर = 10.764 वर्ग फीट</li>
+                <li>1 हेक्टेयर = 10,000 वर्ग मीटर</li>
+                <li>1 एकड़ = 4046.86 वर्ग मीटर</li>
+                <li>1 हेक्टेयर = 2.47105 एकड़</li>
+                <li>1 एकड़ = 100 डिसमिल</li>
+                <li>1 बीघा = 20 डिसमिल (स्थानीय भिन्नता)</li>
+            </ul>
+        </div>
+    </div>
 
 <script src="jmin.js"></script> <!-- JavaScript फाइल लिंक -->
 </body>
 </html>
+
