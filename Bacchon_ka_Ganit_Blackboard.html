@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>बच्चों का गणित ब्लैकबोर्ड</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#d9d9d9;font-family:Arial,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:12px}
+h1{text-align:center;margin:6px 0 10px;font-size:24px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+button{border:0;border-radius:8px;padding:10px 14px;font-size:16px;font-weight:700;cursor:pointer}
+.board{height:70vh;min-height:430px;background:#17351f;border:12px solid #6b4326;border-radius:10px;
+box-shadow:inset 0 0 0 3px #9a6a40,0 5px 15px #777;position:relative;overflow:hidden}
+canvas{width:100%;height:100%;display:block;touch-action:none}
+.note{text-align:center;margin:8px;font-size:14px;color:#333}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🧮 बच्चों का गणित ब्लैकबोर्ड</h1>
+<div class="bar">
+<button onclick="clearBoard()">🧽 साफ़ करो</button>
+<button onclick="undo()">↩️ पीछे</button>
+<button onclick="setMode('pen')">✏️ लिखो</button>
+<button onclick="setMode('eraser')">🧹 मिटाओ</button>
+<button onclick="addLine()">📏 लाइन</button>
+<button onclick="addNumber()">🔢 संख्या</button>
+</div>
+<div class="board"><canvas id="board"></canvas></div>
+<div class="note">उंगली या स्टायलस से सीधे बोर्ड पर गणित लिखें — जोड़, घटाव, गिनती और अभ्यास करें।</div>
+</div>
+<script>
+const c=document.getElementById('board'),ctx=c.getContext('2d');
+let strokes=[], current=null, mode='pen', dpr=1;
+function resize(){
+ const r=c.getBoundingClientRect(); dpr=devicePixelRatio||1;
+ c.width=r.width*dpr;c.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+ redraw();
+}
+function pos(e){const r=c.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+function start(e){e.preventDefault();c.setPointerCapture(e.pointerId);current={mode,pts:[pos(e)]};strokes.push(current);redraw();}
+function move(e){if(!current)return;e.preventDefault();current.pts.push(pos(e));redraw();}
+function end(){current=null}
+function redraw(){
+ const r=c.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
+ ctx.lineCap='round';ctx.lineJoin='round';
+ for(const s of strokes){
+  if(s.pts.length<1)continue;
+  if(s.mode==='line'){ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.pts[0].x,s.pts[0].y);ctx.lineTo(s.pts[1].x,s.pts[1].y);ctx.stroke();continue}
+  ctx.strokeStyle=s.mode==='eraser'?'#17351f':'#f4f4df';ctx.lineWidth=s.mode==='eraser'?28:5;
+  ctx.beginPath();ctx.moveTo(s.pts[0].x,s.pts[0].y);
+  for(let i=1;i<s.pts.length;i++)ctx.lineTo(s.pts[i].x,s.pts[i].y);ctx.stroke();
+ }
+}
+function clearBoard(){strokes=[];redraw()}
+function undo(){strokes.pop();redraw()}
+function setMode(m){mode=m}
+function addLine(){let x=c.clientWidth*0.1,y=c.clientHeight*0.5;strokes.push({mode:'line',pts:[{x,y},{x:c.clientWidth*0.9,y}]});redraw()}
+function addNumber(){let n=prompt('कौन-सी संख्या लिखें?','5');if(n===null)return;
+ let x=c.clientWidth*0.1,y=c.clientHeight*0.2;
+ ctx.font='bold 70px Arial';ctx.fillStyle='#f4f4df';ctx.fillText(n,x,y); /* visual helper only */
+}
+c.addEventListener('pointerdown',start);c.addEventListener('pointermove',move);
+c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end);
+addEventListener('resize',resize);resize();
+</script>
+</body></html>
