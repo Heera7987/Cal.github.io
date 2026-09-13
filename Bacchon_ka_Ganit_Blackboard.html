@@ -1,40 +1,435 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>बच्चों का गणित ब्लैकबोर्ड</title>
-<style>
-*{box-sizing:border-box} body{margin:0;background:#d9d9d9;font-family:Arial,sans-serif}
-.wrap{max-width:1100px;margin:auto;padding:12px}
-h1{text-align:center;margin:6px 0 10px;font-size:24px}
-.bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
-button{border:0;border-radius:8px;padding:10px 14px;font-size:16px;font-weight:700;cursor:pointer}
-.board{height:70vh;min-height:430px;background:#17351f;border:12px solid #6b4326;border-radius:10px;
-box-shadow:inset 0 0 0 3px #9a6a40,0 5px 15px #777;position:relative;overflow:hidden}
-canvas{width:100%;height:100%;display:block;touch-action:none}
-.note{text-align:center;margin:8px;font-size:14px;color:#333}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>बच्चों का गणित ब्लैकबोर्ड — फुल स्क्रीन</title>
+  <style>
+    /* ---------- RESET & FULL-SCREEN BASE ---------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;          /* no scroll */
+      background: #2b2b2b;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      touch-action: none;        /* prevent browser gestures */
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* ---------- APP CONTAINER ---------- */
+    .app {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;            /* dynamic viewport height for mobile */
+      background: #3e2c1b;
+    }
+
+    /* ---------- TOP TOOLBAR ---------- */
+    .toolbar {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px 8px;
+      padding: 8px 10px;
+      background: #3e2c1b;
+      border-bottom: 3px solid #a77b4f;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+    }
+
+    .toolbar button {
+      flex: 0 1 auto;
+      background: #f3e9d2;
+      border: 1px solid #ddc9a8;
+      border-radius: 40px;
+      padding: 8px 16px;
+      font-size: clamp(0.8rem, 3.5vw, 1.15rem);
+      font-weight: 700;
+      color: #2d2d2d;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #8b6b4b, 0 5px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.07s ease, box-shadow 0.07s ease, background 0.15s;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .toolbar button:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 #8b6b4b, 0 5px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .toolbar button.active-tool {
+      background: #ffd966;
+      border-color: #c9a85c;
+      color: #1f1f1f;
+      box-shadow: 0 4px 0 #b38f4b, 0 5px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ---------- BOARD (FILLS ALL REMAINING SPACE) ---------- */
+    .board {
+      flex: 1 1 auto;            /* grow to fill space */
+      position: relative;
+      background: #17351f;
+      border: 8px solid #6b4326;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 3px #9a6a40, inset 0 0 40px #0a1a0a;
+      overflow: hidden;
+      margin: 4px 4px 2px 4px;   /* tiny gaps so wood frame shows */
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    /* ---------- BOTTOM HINT (VERY SMALL) ---------- */
+    .hint {
+      flex: 0 0 auto;
+      background: #1f1f1f;
+      color: #e0d6c0;
+      text-align: center;
+      padding: 4px 8px;
+      font-size: clamp(0.65rem, 2.5vw, 0.9rem);
+      font-weight: 500;
+      border-top: 2px solid #a77b4f;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ---------- RESPONSIVE TWEAKS ---------- */
+    @media (max-width: 600px) {
+      .toolbar {
+        gap: 4px 6px;
+        padding: 6px 6px;
+      }
+      .toolbar button {
+        padding: 6px 10px;
+        border-radius: 30px;
+        box-shadow: 0 3px 0 #8b6b4b, 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+      .board {
+        border-width: 6px;
+        margin: 3px 3px 1px 3px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .toolbar button {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+      }
+    }
+
+    /* Landscape phone: toolbar more compact */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .toolbar {
+        padding: 4px 8px;
+        gap: 4px 6px;
+      }
+      .toolbar button {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+      }
+      .hint {
+        display: none;          /* hide hint to save space */
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-<h1>🧮 बच्चों का गणित ब्लैकबोर्ड</h1>
-<div class="bar">
-<button onclick="clearBoard()">🧽 साफ़ करो</button>
-<button onclick="undo()">↩️ पीछे</button>
-<button onclick="setMode('pen')">✏️ लिखो</button>
-<button onclick="setMode('eraser')">🧹 मिटाओ</button>
-<button onclick="addLine()">📏 लाइन</button>
-<button onclick="addNumber()">🔢 संख्या</button>
-</div>
-<div class="board"><canvas id="board"></canvas></div>
-<div class="note">उंगली या स्टायलस से सीधे बोर्ड पर गणित लिखें — जोड़, घटाव, गिनती और अभ्यास करें।</div>
-</div>
-<script>
-const c=document.getElementById('board'),ctx=c.getContext('2d');
-let strokes=[], current=null, mode='pen', dpr=1;
-function resize(){
- const r=c.getBoundingClientRect(); dpr=devicePixelRatio||1;
+  <div class="app">
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <button onclick="clearBoard()" title="पूरा बोर्ड साफ़ करें">🧽 साफ़</button>
+      <button onclick="undo()" title="पिछला स्ट्रोक हटाएँ">↩️ पीछे</button>
+      <button id="btnPen" class="active-tool" onclick="setMode('pen')" title="पेन से लिखें">✏️ लिखो</button>
+      <button id="btnEraser" onclick="setMode('eraser')" title="रबर से मिटाएँ">🧹 मिटाओ</button>
+      <button onclick="addLine()" title="सीधी रेखा जोड़ें">📏 लाइन</button>
+      <button onclick="addNumber()" title="संख्या जोड़ें">🔢 संख्या</button>
+    </div>
+
+    <!-- BOARD -->
+    <div class="board">
+      <canvas id="board"></canvas>
+    </div>
+
+    <!-- HINT -->
+    <div class="hint">
+      ✍️ उंगली या स्टायलस से सीधे बोर्ड पर लिखें — जोड़, घटाव, गिनती और अभ्यास करें।
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('board');
+      const ctx = canvas.getContext('2d');
+
+      // ---------- STATE ----------
+      let strokes = [];            // store all drawing elements
+      let currentStroke = null;
+      let mode = 'pen';           // 'pen' or 'eraser'
+      let dpr = window.devicePixelRatio || 1;
+
+      const btnPen = document.getElementById('btnPen');
+      const btnEraser = document.getElementById('btnEraser');
+
+      // ---------- RESIZE CANVAS TO FILL BOARD DIV ----------
+      function resizeCanvas() {
+        const boardDiv = canvas.parentElement;   // .board
+        const rect = boardDiv.getBoundingClientRect();
+
+        // Set canvas physical size (accounting for DPR)
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+
+        // Scale context so we draw in CSS pixels
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        redraw();
+      }
+
+      // ---------- GET COORDINATES (CSS pixels relative to canvas) ----------
+      function getCanvasCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        // Since canvas has no border and fills .board, simple subtraction works.
+        // But .board has border; canvas is inside. rect already accounts for that.
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+      }
+
+      // ---------- REDRAW EVERYTHING (with text support) ----------
+      function redraw() {
+        const boardDiv = canvas.parentElement;
+        const rect = boardDiv.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        for (const s of strokes) {
+          // --- LINE ---
+          if (s.mode === 'line') {
+            if (s.pts.length < 2) continue;
+            ctx.beginPath();
+            ctx.strokeStyle = s.color || '#f4f4df';
+            ctx.lineWidth = s.width || 3;
+            ctx.moveTo(s.pts[0].x, s.pts[0].y);
+            ctx.lineTo(s.pts[1].x, s.pts[1].y);
+            ctx.stroke();
+            continue;
+          }
+
+          // --- TEXT (NUMBER) ---
+          if (s.mode === 'text') {
+            ctx.font = `bold ${s.fontSize || 70}px 'Segoe UI', Arial, sans-serif`;
+            ctx.fillStyle = s.color || '#f4f4df';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(s.text, s.x, s.y);
+            continue;
+          }
+
+          // --- PEN / ERASER ---
+          const isEraser = s.mode === 'eraser';
+          ctx.strokeStyle = isEraser ? '#17351f' : (s.color || '#f4f4df');
+          ctx.lineWidth = isEraser ? 30 : (s.width || 5);
+
+          if (s.pts.length === 1) {
+            // single dot
+            ctx.beginPath();
+            ctx.arc(s.pts[0].x, s.pts[0].y, isEraser ? 15 : 2.5, 0, 2 * Math.PI);
+            ctx.fillStyle = isEraser ? '#17351f' : (s.color || '#f4f4df');
+            ctx.fill();
+          } else {
+            ctx.beginPath();
+            ctx.moveTo(s.pts[0].x, s.pts[0].y);
+            for (let i = 1; i < s.pts.length; i++) {
+              ctx.lineTo(s.pts[i].x, s.pts[i].y);
+            }
+            ctx.stroke();
+          }
+        }
+      }
+
+      // ---------- POINTER HANDLERS ----------
+      function onPointerDown(e) {
+        e.preventDefault();
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+
+        canvas.setPointerCapture(e.pointerId);
+        const { x, y } = getCanvasCoords(e);
+
+        if (mode === 'pen' || mode === 'eraser') {
+          currentStroke = {
+            mode: mode,
+            pts: [{ x, y }],
+            color: mode === 'eraser' ? '#17351f' : '#f4f4df',
+            width: mode === 'eraser' ? 30 : 5
+          };
+          strokes.push(currentStroke);
+          redraw();
+        }
+      }
+
+      function onPointerMove(e) {
+        if (!currentStroke) return;
+        e.preventDefault();
+        const { x, y } = getCanvasCoords(e);
+        currentStroke.pts.push({ x, y });
+        redraw();
+      }
+
+      function onPointerUp(e) {
+        if (currentStroke) {
+          currentStroke = null;
+          try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+      }
+
+      function onPointerCancel(e) {
+        currentStroke = null;
+        try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+
+      // ---------- ATTACH EVENTS ----------
+      canvas.addEventListener('pointerdown', onPointerDown);
+      canvas.addEventListener('pointermove', onPointerMove);
+      canvas.addEventListener('pointerup', onPointerUp);
+      canvas.addEventListener('pointercancel', onPointerCancel);
+
+      // Prevent touch scrolling/zoom on canvas
+      canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+      canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+
+      // ---------- WINDOW / ORIENTATION RESIZE ----------
+      function handleResize() {
+        dpr = window.devicePixelRatio || 1;
+        resizeCanvas();
+      }
+
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('orientationchange', () => {
+        setTimeout(handleResize, 120);
+      });
+
+      // Also handle visual viewport changes (keyboard, etc.)
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', handleResize);
+      }
+
+      // ---------- TOOL MODE ----------
+      function updateActiveTool() {
+        if (mode === 'pen') {
+          btnPen.classList.add('active-tool');
+          btnEraser.classList.remove('active-tool');
+        } else if (mode === 'eraser') {
+          btnEraser.classList.add('active-tool');
+          btnPen.classList.remove('active-tool');
+        }
+      }
+
+      // ---------- EXPOSED GLOBAL FUNCTIONS ----------
+      window.clearBoard = function() {
+        strokes = [];
+        currentStroke = null;
+        redraw();
+      };
+
+      window.undo = function() {
+        if (strokes.length > 0) {
+          strokes.pop();
+          currentStroke = null;
+          redraw();
+        }
+      };
+
+      window.setMode = function(newMode) {
+        if (newMode === 'pen' || newMode === 'eraser') {
+          mode = newMode;
+          currentStroke = null;
+          updateActiveTool();
+        }
+      };
+
+      window.addLine = function() {
+        const boardDiv = canvas.parentElement;
+        const rect = boardDiv.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+        const y = h * 0.5;
+
+        strokes.push({
+          mode: 'line',
+          pts: [{ x: w * 0.1, y: y }, { x: w * 0.9, y: y }],
+          color: '#f4f4df',
+          width: 3
+        });
+        redraw();
+        currentStroke = null;
+      };
+
+      window.addNumber = function() {
+        const n = prompt('कौन-सी संख्या लिखें? (जैसे 5, 42, 100)', '5');
+        if (n === null || n.trim() === '') return;
+
+        const boardDiv = canvas.parentElement;
+        const rect = boardDiv.getBoundingClientRect();
+
+        // Scale font size based on board width (responsive)
+        const fontSize = Math.min(rect.width * 0.12, 120);
+
+        strokes.push({
+          mode: 'text',
+          text: n.trim(),
+          x: rect.width * 0.1,
+          y: rect.height * 0.25,
+          color: '#f4f4df',
+          fontSize: fontSize
+        });
+        redraw();
+        currentStroke = null;
+      };
+
+      // ---------- INITIAL SETUP ----------
+      function init() {
+        dpr = window.devicePixelRatio || 1;
+        resizeCanvas();
+        updateActiveTool();
+      }
+
+      // Use requestAnimationFrame to ensure layout is ready
+      requestAnimationFrame(() => {
+        init();
+      });
+
+      // Double-check after a tiny delay for mobile browsers
+      setTimeout(() => {
+        handleResize();
+      }, 100);
+
+    })();
+  </script>
+</body>
+</html> const r=c.getBoundingClientRect(); dpr=devicePixelRatio||1;
  c.width=r.width*dpr;c.height=r.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
  redraw();
 }
