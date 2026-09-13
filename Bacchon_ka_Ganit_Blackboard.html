@@ -1,40 +1,578 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>बच्चों का गणित ब्लैकबोर्ड — एडवांस फुल साइज़</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>गणित ब्लैकबोर्ड</title>
 <style>
-  /* ---------- RESET ---------- */
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
   html, body {
-    width: 100%; height: 100%; overflow: hidden;
-    background: #2b2b2b;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #000;
+  }
+  
+  /* Toolbar at top */
+  #toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    background: #3e2c1b;
+    padding: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 3px solid #a77b4f;
+    z-index: 10;
+    min-height: 60px;
+  }
+  
+  #toolbar button, #toolbar .color-btn {
+    background: #f3e9d2;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+    box-shadow: 0 2px 0 #8b6b4b;
+    font-family: inherit;
+    color: #2d2d2d;
+  }
+  
+  #toolbar button:active {
+    background: #ffd966;
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+  
+  #toolbar button.active {
+    background: #ffd966;
+  }
+  
+  .color-btn {
+    width: 44px !important;
+    height: 44px;
+    border-radius: 50% !important;
+    border: 3px solid white !important;
+    padding: 0 !important;
+    min-width: 44px !important;
+  }
+  
+  .color-btn.active {
+    border-color: #ffd966 !important;
+    border-width: 4px !important;
+  }
+  
+  /* Canvas fills everything below toolbar */
+  #canvas {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 60px);
+    background: #17351f;
+    display: block;
     touch-action: none;
-    -webkit-user-select: none; user-select: none;
+    cursor: crosshair;
   }
-
-  /* ---------- APP (full screen) ---------- */
-  .app {
-    display: flex; flex-direction: column;
-    width: 100vw; height: 100vh; height: 100dvh;
-    background: #2b2b2b;
+  
+  /* Modal */
+  #modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
   }
-
-  /* ---------- BOARD WRAP ---------- */
-  .board-wrap {
-    flex: 1 1 auto;
-    position: relative;
-    padding: 8px;
+  
+  #modal.show {
     display: flex;
   }
-
-  /* ---------- WOODEN BLACKBOARD FRAME ---------- */
-  .board {
-    position: relative;
+  
+  #modalBox {
+    background: #f3e9d2;
+    padding: 15px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+  }
+  
+  #numInput {
+    width: 100%;
+    padding: 12px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid #8b6b4b;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-family: inherit;
+  }
+  
+  #numpad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  
+  #numpad button {
+    padding: 12px 5px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    min-height: 48px;
+    font-family: inherit;
+  }
+  
+  #numpad button:active {
+    background: #ffd966;
+  }
+  
+  #numpad .op {
+    background: #ffd966;
+  }
+  
+  #numpad .wide {
+    grid-column: span 2;
+    background: #ccc;
+  }
+  
+  .row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  
+  .row button {
     flex: 1;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  
+  .ok-btn { background: #4caf50; color: white; }
+  .cancel-btn { background: #ccc; color: #333; }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <button onclick="doClear()">🧽</button>
+  <button onclick="doUndo()">↩️</button>
+  <button id="btnPen" class="active" onclick="setMode('pen')">✏️</button>
+  <button id="btnEraser" onclick="setMode('eraser')">🧹</button>
+  <button id="btnLine" onclick="setMode('line')">📏</button>
+  <div class="color-btn active" style="background:#ffffff" onclick="setColor('#ffffff', this)"></div>
+  <div class="color-btn" style="background:#ffd966" onclick="setColor('#ffd966', this)"></div>
+  <div class="color-btn" style="background:#ff6b6b" onclick="setColor('#ff6b6b', this)"></div>
+  <div class="color-btn" style="background:#4ecdc4" onclick="setColor('#4ecdc4', this)"></div>
+  <div class="color-btn" style="background:#a29bfe" onclick="setColor('#a29bfe', this)"></div>
+  <button onclick="openModal()">🔢</button>
+  <button onclick="doSave()">💾</button>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div id="modal">
+  <div id="modalBox">
+    <input type="text" id="numInput" placeholder="जैसे: 5 या 2+3" autocomplete="off">
+    <div id="numpad">
+      <button onclick="addKey('7')">7</button>
+      <button onclick="addKey('8')">8</button>
+      <button onclick="addKey('9')">9</button>
+      <button class="op" onclick="addKey('+')">+</button>
+      <button onclick="addKey('4')">4</button>
+      <button onclick="addKey('5')">5</button>
+      <button onclick="addKey('6')">6</button>
+      <button class="op" onclick="addKey('-')">−</button>
+      <button onclick="addKey('1')">1</button>
+      <button onclick="addKey('2')">2</button>
+      <button onclick="addKey('3')">3</button>
+      <button class="op" onclick="addKey('×')">×</button>
+      <button onclick="addKey('0')">0</button>
+      <button onclick="addKey('.')">.</button>
+      <button class="op" onclick="addKey('=')">=</button>
+      <button class="op" onclick="addKey('÷')">÷</button>
+      <button class="wide" onclick="delKey()">⌫ मिटाएँ</button>
+      <button class="wide" onclick="clearKey()">C</button>
+    </div>
+    <div class="row">
+      <button class="cancel-btn" onclick="closeModal()">रद्द</button>
+      <button class="ok-btn" onclick="placeNumber()">ठीक</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================== SETUP ==================
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+var drawing = false;
+var mode = 'pen';
+var color = '#ffffff';
+var lineSize = 5;
+var lastX = 0, lastY = 0;
+var startX = 0, startY = 0;
+var allStrokes = [];
+var redoStack = [];
+
+// ================== RESIZE CANVAS ==================
+function sizeCanvas() {
+  var dpr = window.devicePixelRatio || 1;
+  var w = window.innerWidth;
+  var h = window.innerHeight - 60; // toolbar height
+  
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  redrawAll();
+}
+
+// ================== POSITION ==================
+function getPos(e) {
+  var rect = canvas.getBoundingClientRect();
+  var clientX, clientY;
+  
+  if (e.touches && e.touches.length > 0) {
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  } else if (e.changedTouches && e.changedTouches.length > 0) {
+    clientX = e.changedTouches[0].clientX;
+    clientY = e.changedTouches[0].clientY;
+  } else {
+    clientX = e.clientX;
+    clientY = e.clientY;
+  }
+  
+  return {
+    x: clientX - rect.left,
+    y: clientY - rect.top
+  };
+}
+
+// ================== REDRAW ==================
+function redrawAll() {
+  var w = window.innerWidth;
+  var h = window.innerHeight - 60;
+  ctx.clearRect(0, 0, w, h);
+  
+  for (var i = 0; i < allStrokes.length; i++) {
+    drawStroke(allStrokes[i]);
+  }
+}
+
+function drawStroke(s) {
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  
+  if (s.type === 'text') {
+    ctx.font = 'bold ' + s.size + 'px Arial';
+    ctx.fillStyle = s.color;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(s.text, s.x, s.y);
+    return;
+  }
+  
+  if (s.type === 'line') {
+    ctx.beginPath();
+    ctx.strokeStyle = s.color;
+    ctx.lineWidth = s.size;
+    ctx.moveTo(s.x1, s.y1);
+    ctx.lineTo(s.x2, s.y2);
+    ctx.stroke();
+    return;
+  }
+  
+  if (s.type === 'pen' || s.type === 'eraser') {
+    var c = (s.type === 'eraser') ? '#17351f' : s.color;
+    var w = (s.type === 'eraser') ? 30 : s.size;
+    ctx.strokeStyle = c;
+    ctx.lineWidth = w;
+    
+    if (s.pts.length === 1) {
+      ctx.beginPath();
+      ctx.fillStyle = c;
+      ctx.arc(s.pts[0].x, s.pts[0].y, w/2, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(s.pts[0].x, s.pts[0].y);
+      for (var j = 1; j < s.pts.length; j++) {
+        ctx.lineTo(s.pts[j].x, s.pts[j].y);
+      }
+      ctx.stroke();
+    }
+  }
+}
+
+// ================== START DRAW ==================
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  
+  var pos = getPos(e);
+  startX = pos.x;
+  startY = pos.y;
+  lastX = pos.x;
+  lastY = pos.y;
+  redoStack = [];
+  
+  if (mode === 'pen' || mode === 'eraser') {
+    var s = {
+      type: mode,
+      color: (mode === 'eraser') ? '#17351f' : color,
+      size: (mode === 'eraser') ? 30 : lineSize,
+      pts: [{x: pos.x, y: pos.y}]
+    };
+    allStrokes.push(s);
+    
+    // Draw the initial dot
+    var w = (mode === 'eraser') ? 30 : lineSize;
+    ctx.beginPath();
+    ctx.fillStyle = (mode === 'eraser') ? '#17351f' : color;
+    ctx.arc(pos.x, pos.y, w/2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// ================== MOVE DRAW ==================
+function moveDraw(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  
+  var pos = getPos(e);
+  
+  if (mode === 'pen' || mode === 'eraser') {
+    var s = allStrokes[allStrokes.length - 1];
+    s.pts.push({x: pos.x, y: pos.y});
+    
+    var c = (s.type === 'eraser') ? '#17351f' : s.color;
+    var w = (s.type === 'eraser') ? 30 : s.size;
+    
+    ctx.beginPath();
+    ctx.strokeStyle = c;
+    ctx.lineWidth = w;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    
+    lastX = pos.x;
+    lastY = pos.y;
+  } else if (mode === 'line') {
+    redrawAll();
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineSize;
+    ctx.lineCap = 'round';
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
+}
+
+// ================== END DRAW ==================
+function endDraw(e) {
+  if (!drawing) return;
+  drawing = false;
+  e.preventDefault();
+  
+  if (mode === 'line') {
+    var pos = getPos(e);
+    allStrokes.push({
+      type: 'line',
+      color: color,
+      size: lineSize,
+      x1: startX,
+      y1: startY,
+      x2: pos.x,
+      y2: pos.y
+    });
+    redrawAll();
+  }
+}
+
+// ================== EVENT LISTENERS ==================
+// Mouse events
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', moveDraw);
+canvas.addEventListener('mouseup', endDraw);
+canvas.addEventListener('mouseleave', function() { drawing = false; });
+
+// Touch events
+canvas.addEventListener('touchstart', startDraw, {passive: false});
+canvas.addEventListener('touchmove', moveDraw, {passive: false});
+canvas.addEventListener('touchend', endDraw, {passive: false});
+canvas.addEventListener('touchcancel', function() { drawing = false; }, {passive: false});
+
+// Prevent context menu on long press
+canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+// ================== TOOLBAR ==================
+function setMode(m) {
+  mode = m;
+  document.getElementById('btnPen').classList.remove('active');
+  document.getElementById('btnEraser').classList.remove('active');
+  document.getElementById('btnLine').classList.remove('active');
+  
+  if (m === 'pen') document.getElementById('btnPen').classList.add('active');
+  if (m === 'eraser') document.getElementById('btnEraser').classList.add('active');
+  if (m === 'line') document.getElementById('btnLine').classList.add('active');
+}
+
+function setColor(c, el) {
+  color = c;
+  var dots = document.querySelectorAll('.color-btn');
+  for (var i = 0; i < dots.length; i++) dots[i].classList.remove('active');
+  el.classList.add('active');
+  if (mode === 'eraser') setMode('pen');
+}
+
+function doClear() {
+  allStrokes = [];
+  redoStack = [];
+  redrawAll();
+}
+
+function doUndo() {
+  if (allStrokes.length > 0) {
+    redoStack.push(allStrokes.pop());
+    redrawAll();
+  }
+}
+
+function doSave() {
+  var temp = document.createElement('canvas');
+  temp.width = canvas.width;
+  temp.height = canvas.height;
+  var tc = temp.getContext('2d');
+  tc.fillStyle = '#17351f';
+  tc.fillRect(0, 0, temp.width, temp.height);
+  tc.drawImage(canvas, 0, 0);
+  
+  var a = document.createElement('a');
+  a.download = 'board-' + Date.now() + '.png';
+  a.href = temp.toDataURL('image/png');
+  a.click();
+}
+
+// ================== MODAL ==================
+function openModal() {
+  document.getElementById('numInput').value = '';
+  document.getElementById('modal').classList.add('show');
+  setTimeout(function() {
+    document.getElementById('numInput').focus();
+  }, 100);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+function addKey(ch) {
+  document.getElementById('numInput').value += ch;
+}
+
+function delKey() {
+  var inp = document.getElementById('numInput');
+  inp.value = inp.value.slice(0, -1);
+}
+
+function clearKey() {
+  document.getElementById('numInput').value = '';
+}
+
+function placeNumber() {
+  var text = document.getElementById('numInput').value.trim();
+  if (text === '') { closeModal(); return; }
+  
+  var w = window.innerWidth;
+  var h = window.innerHeight - 60;
+  var fontSize = Math.max(30, Math.min(w * 0.12, 120));
+  
+  allStrokes.push({
+    type: 'text',
+    text: text,
+    x: w * 0.1,
+    y: h * 0.15,
+    color: color,
+    size: fontSize
+  });
+  
+  redrawAll();
+  closeModal();
+}
+
+// Enter key to place number
+document.getElementById('numInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); placeNumber(); }
+  if (e.key === 'Escape') closeModal();
+});
+
+// ================== WINDOW RESIZE ==================
+window.addEventListener('resize', sizeCanvas);
+window.addEventListener('orientationchange', function() {
+  setTimeout(sizeCanvas, 300);
+  setTimeout(sizeCanvas, 600);
+});
+
+// ================== INIT ==================
+sizeCanvas();
+
+// Multiple resize attempts for mobile
+setTimeout(sizeCanvas, 100);
+setTimeout(sizeCanvas, 300);
+setTimeout(sizeCanvas, 800);
+
+// Welcome message
+setTimeout(function() {
+  var w = window.innerWidth;
+  var h = window.innerHeight - 60;
+  if (w > 100) {
+    allStrokes.push({
+      type: 'text',
+      text: '2 + 2 = 4',
+      x: w * 0.15,
+      y: h * 0.15,
+      color: '#ffd966',
+      size: Math.max(30, Math.min(w * 0.08, 80))
+    });
+    redrawAll();
+  }
+}, 1000);
+</script>
+
+</body>
+</html>    flex: 1;
     display: flex;
     flex-direction: column;
     background: #17351f;
