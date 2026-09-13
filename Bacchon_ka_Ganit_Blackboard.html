@@ -1,40 +1,605 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <title>बच्चों का गणित ब्लैकबोर्ड — फुल स्क्रीन</title>
-  <style>
-    /* ---------- RESET & FULL-SCREEN BASE ---------- */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>बच्चों का गणित ब्लैकबोर्ड — एडवांस फुल साइज़</title>
+<style>
+  /* ---------- RESET ---------- */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;          /* no scroll */
-      background: #2b2b2b;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      touch-action: none;        /* prevent browser gestures */
-      -webkit-user-select: none;
-      user-select: none;
-    }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: #2b2b2b;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    touch-action: none;
+    -webkit-user-select: none; user-select: none;
+  }
 
-    /* ---------- APP CONTAINER ---------- */
-    .app {
-      display: flex;
-      flex-direction: column;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;            /* dynamic viewport height for mobile */
-      background: #3e2c1b;
-    }
+  /* ---------- APP (full screen) ---------- */
+  .app {
+    display: flex; flex-direction: column;
+    width: 100vw; height: 100vh; height: 100dvh;
+    background: #2b2b2b;
+  }
 
-    /* ---------- TOP TOOLBAR ---------- */
-    .toolbar {
+  /* ---------- BOARD WRAP ---------- */
+  .board-wrap {
+    flex: 1 1 auto;
+    position: relative;
+    padding: 8px;
+    display: flex;
+  }
+
+  /* ---------- WOODEN BLACKBOARD FRAME ---------- */
+  .board {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #17351f;
+    border: 14px solid #6b4326;
+    border-radius: 14px;
+    box-shadow:
+      inset 0 0 0 4px #9a6a40,
+      inset 0 0 60px #0a1a0a,
+      0 12px 30px rgba(0,0,0,0.6);
+    overflow: hidden;
+  }
+
+  /* subtle chalk texture */
+  .board::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 0%, transparent 60%),
+      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ---------- INSIDE TOOLBAR (on the board) ---------- */
+  .board-toolbar {
+    flex: 0 0 auto;
+    display: flex; flex-wrap: wrap;
+    align-items: center; justify-content: center;
+    gap: 5px 6px;
+    padding: 8px 10px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.15));
+    border-bottom: 2px solid rgba(154,106,64,0.7);
+    z-index: 3;
+    position: relative;
+  }
+
+  .tool-group {
+    display: flex; align-items: center; gap: 3px;
+    background: rgba(0,0,0,0.3);
+    padding: 3px 6px; border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .board-toolbar button {
+    background: #f3e9d2;
+    border: 1px solid #ddc9a8;
+    border-radius: 40px;
+    padding: 7px 12px;
+    font-size: clamp(0.72rem, 2.8vw, 0.98rem);
+    font-weight: 700;
+    color: #2d2d2d;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #8b6b4b, 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.07s, box-shadow 0.07s, background 0.15s;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1;
+  }
+  .board-toolbar button:active {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 #8b6b4b, 0 4px 8px rgba(0,0,0,0.3);
+  }
+  .board-toolbar button.active-tool {
+    background: #ffd966;
+    border-color: #c9a85c;
+    color: #1f1f1f;
+    box-shadow: 0 3px 0 #b38f4b, 0 4px 8px rgba(0,0,0,0.4);
+  }
+
+  /* Color swatches */
+  .color-swatches {
+    display: flex; gap: 4px; align-items: center;
+    padding: 0 3px;
+  }
+  .swatch {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid #f3e9d2; cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    transition: transform 0.15s, border-color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.active-swatch {
+    border-color: #ffd966;
+    transform: scale(1.2);
+    box-shadow: 0 0 0 3px rgba(255,217,102,0.5);
+  }
+
+  /* Size slider */
+  .size-control {
+    display: flex; align-items: center; gap: 5px;
+    padding: 0 3px;
+  }
+  .size-control label {
+    color: #f3e9d2; font-size: 0.72rem; font-weight: 700;
+  }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    width: 70px; height: 6px;
+    background: #8b6b4b; border-radius: 3px;
+    outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #ffd966; border: 2px solid #f3e9d2;
+    cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #ffd966; border: 2px solid #f3e9d2;
+    cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+
+  /* ---------- CANVAS AREA (fills remaining board space) ---------- */
+  .canvas-wrap {
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  canvas {
+    display: block;
+    width: 100%; height: 100%;
+    touch-action: none;
+    cursor: crosshair;
+  }
+
+  /* ---------- BOTTOM HINT ---------- */
+  .hint {
+    flex: 0 0 auto;
+    background: #1f1f1f; color: #e0d6c0;
+    text-align: center; padding: 5px 8px;
+    font-size: clamp(0.6rem, 2.3vw, 0.85rem);
+    font-weight: 500;
+    border-top: 2px solid #a77b4f;
+    white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 720px) {
+    .board-toolbar { gap: 4px 4px; padding: 6px 6px; }
+    .board-toolbar button { padding: 6px 9px; border-radius: 30px;
+      box-shadow: 0 2px 0 #8b6b4b, 0 3px 6px rgba(0,0,0,0.3); }
+    .swatch { width: 20px; height: 20px; }
+    input[type=range] { width: 55px; }
+    .tool-group { padding: 2px 4px; gap: 2px; }
+    .board { border-width: 10px; border-radius: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .board-toolbar button { padding: 5px 7px; font-size: 0.68rem; }
+    .swatch { width: 17px; height: 17px; }
+    input[type=range] { width: 42px; }
+    .size-control label { display: none; }
+    .board { border-width: 8px; }
+    .board-wrap { padding: 5px; }
+  }
+
+  @media (max-height: 480px) and (orientation: landscape) {
+    .board-toolbar { padding: 4px 6px; gap: 3px 4px; }
+    .board-toolbar button { padding: 4px 8px; font-size: 0.7rem; }
+    .swatch { width: 17px; height: 17px; }
+    .hint { display: none; }
+    .board { border-width: 7px; }
+  }
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+    backdrop-filter: blur(3px);
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #f3e9d2; border-radius: 18px;
+    padding: 20px; max-width: 360px; width: 100%;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+    text-align: center;
+    animation: pop 0.2s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .modal h3 {
+    color: #3e2c1b; margin-bottom: 12px;
+    font-size: 1.2rem;
+  }
+  .modal input {
+    width: 100%; padding: 12px;
+    font-size: 1.5rem; font-weight: 700;
+    text-align: center;
+    border: 3px solid #8b6b4b; border-radius: 10px;
+    outline: none; background: #fff;
+    color: #2d2d2d;
+  }
+  .modal input:focus { border-color: #ffd966; }
+  .numpad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 7px; margin-top: 12px;
+  }
+  .numpad button {
+    padding: 14px 6px; font-size: 1.15rem; font-weight: 700;
+    border: none; border-radius: 10px;
+    background: #fff; color: #2d2d2d;
+    cursor: pointer; box-shadow: 0 3px 0 #bbb;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .numpad button:active { transform: translateY(3px); box-shadow: none; }
+  .numpad .op { background: #ffd966; }
+  .numpad .wide { grid-column: span 2; background: #bbb; }
+  .modal-buttons {
+    display: flex; gap: 10px; margin-top: 14px;
+  }
+  .modal-buttons button {
+    flex: 1; padding: 12px;
+    font-size: 1rem; font-weight: 700;
+    border: none; border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+  }
+  .modal-buttons .btn-ok { background: #4caf50; color: #fff; }
+  .modal-buttons .btn-cancel { background: #bbb; color: #333; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ==================== BOARD WRAP ==================== -->
+  <div class="board-wrap">
+    <div class="board" id="boardDiv">
+
+      <!-- ===== INSIDE BOARD TOOLBAR ===== -->
+      <div class="board-toolbar">
+
+        <!-- Actions -->
+        <div class="tool-group">
+          <button onclick="clearBoard()" title="साफ़ करें">🧽</button>
+          <button onclick="undo()" title="पीछे">↩️</button>
+          <button onclick="redo()" title="आगे">↪️</button>
+        </div>
+
+        <!-- Tools -->
+        <div class="tool-group">
+          <button id="btnPen" class="active-tool" onclick="setMode('pen')" title="पेन">✏️</button>
+          <button id="btnEraser" onclick="setMode('eraser')" title="रबर">🧹</button>
+          <button id="btnLine" onclick="setMode('line')" title="रेखा">📏</button>
+          <button id="btnRect" onclick="setMode('rect')" title="आयत">▭</button>
+          <button id="btnCircle" onclick="setMode('circle')" title="वृत्त">⭕</button>
+        </div>
+
+        <!-- Colors -->
+        <div class="color-swatches">
+          <div class="swatch active-swatch" style="background:#f4f4df" onclick="setColor('#f4f4df',this)"></div>
+          <div class="swatch" style="background:#ffd966" onclick="setColor('#ffd966',this)"></div>
+          <div class="swatch" style="background:#ff6b6b" onclick="setColor('#ff6b6b',this)"></div>
+          <div class="swatch" style="background:#4ecdc4" onclick="setColor('#4ecdc4',this)"></div>
+          <div class="swatch" style="background:#a29bfe" onclick="setColor('#a29bfe',this)"></div>
+          <div class="swatch" style="background:#74b9ff" onclick="setColor('#74b9ff',this)"></div>
+        </div>
+
+        <!-- Size -->
+        <div class="size-control tool-group">
+          <label>आकार</label>
+          <input type="range" id="sizeSlider" min="1" max="40" value="5" oninput="setSize(this.value)">
+        </div>
+
+        <!-- Extras -->
+        <div class="tool-group">
+          <button onclick="addNumber()" title="संख्या">🔢</button>
+          <button onclick="toggleGrid()" id="gridBtn" title="ग्रिड">▦</button>
+          <button onclick="saveImage()" title="सेव">💾</button>
+        </div>
+      </div>
+
+      <!-- ===== CANVAS ===== -->
+      <div class="canvas-wrap">
+        <canvas id="board"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HINT ==================== -->
+  <div class="hint">✍️ उंगली या स्टायलस से सीधे बोर्ड पर लिखें — जोड़, घटाव, गिनती और अभ्यास करें।</div>
+</div>
+
+<!-- ==================== NUMBER MODAL ==================== -->
+<div class="modal-overlay" id="numModal">
+  <div class="modal">
+    <h3>🔢 संख्या / अभिव्यक्ति लिखें</h3>
+    <input type="text" id="numInput" inputmode="none" placeholder="5" autocomplete="off">
+    <div class="numpad">
+      <button onclick="numpadPress('7')">7</button>
+      <button onclick="numpadPress('8')">8</button>
+      <button onclick="numpadPress('9')">9</button>
+      <button class="op" onclick="numpadPress('÷')">÷</button>
+
+      <button onclick="numpadPress('4')">4</button>
+      <button onclick="numpadPress('5')">5</button>
+      <button onclick="numpadPress('6')">6</button>
+      <button class="op" onclick="numpadPress('×')">×</button>
+
+      <button onclick="numpadPress('1')">1</button>
+      <button onclick="numpadPress('2')">2</button>
+      <button onclick="numpadPress('3')">3</button>
+      <button class="op" onclick="numpadPress('-')">−</button>
+
+      <button onclick="numpadPress('0')">0</button>
+      <button onclick="numpadPress('.')">.</button>
+      <button class="op" onclick="numpadPress('+')">+</button>
+      <button class="op" onclick="numpadPress('=')">=</button>
+
+      <button class="wide" onclick="numpadBackspace()">⌫ मिटाएँ</button>
+      <button class="wide" onclick="numpadClear()">C साफ़</button>
+    </div>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeNumModal()">रद्द</button>
+      <button class="btn-ok" onclick="placeNumber()">ठीक</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('board');
+  const boardDiv = document.getElementById('boardDiv');
+  const ctx = canvas.getContext('2d');
+
+  // ================= STATE =================
+  let strokes = [];
+  let redoStack = [];
+  let currentStroke = null;
+  let mode = 'pen';
+  let currentColor = '#f4f4df';
+  let currentSize = 5;
+  let dpr = window.devicePixelRatio || 1;
+  let showGrid = false;
+  let shapeStart = null;
+  let pendingNumberText = '';
+
+  // DOM
+  const btnPen = document.getElementById('btnPen');
+  const btnEraser = document.getElementById('btnEraser');
+  const btnLine = document.getElementById('btnLine');
+  const btnRect = document.getElementById('btnRect');
+  const btnCircle = document.getElementById('btnCircle');
+  const gridBtn = document.getElementById('gridBtn');
+  const numModal = document.getElementById('numModal');
+  const numInput = document.getElementById('numInput');
+
+  // ================= RESIZE (auto-fit canvas to board area) =================
+  function resizeCanvas() {
+    const wrap = canvas.parentElement;   // .canvas-wrap
+    const rect = wrap.getBoundingClientRect();
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    redraw();
+  }
+
+  function getCanvasCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+
+  // ================= GRID =================
+  function drawGrid() {
+    if (!showGrid) return;
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    const step = 40;
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.lineWidth = 1;
+    for (let x = step; x < w; x += step) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+    }
+    for (let y = step; y < h; y += step) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
+    ctx.restore();
+  }
+
+  // ================= REDRAW =================
+  function redraw() {
+    const rect = canvas.getBoundingClientRect();
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    drawGrid();
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    for (const s of strokes) renderStroke(s);
+  }
+
+  function renderStroke(s) {
+    // TEXT
+    if (s.type === 'text') {
+      ctx.font = `bold ${s.fontSize || 70}px 'Segoe UI', Arial, sans-serif`;
+      ctx.fillStyle = s.color;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(s.text, s.x, s.y);
+      return;
+    }
+    // LINE
+    if (s.type === 'line') {
+      ctx.beginPath();
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.size;
+      ctx.moveTo(s.x1, s.y1);
+      ctx.lineTo(s.x2, s.y2);
+      ctx.stroke();
+      return;
+    }
+    // RECT
+    if (s.type === 'rect') {
+      ctx.beginPath();
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.size;
+      ctx.strokeRect(
+        Math.min(s.x1, s.x2), Math.min(s.y1, s.y2),
+        Math.abs(s.x2 - s.x1), Math.abs(s.y2 - s.y1)
+      );
+      return;
+    }
+    // CIRCLE
+    if (s.type === 'circle') {
+      ctx.beginPath();
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.size;
+      const cx = (s.x1 + s.x2) / 2;
+      const cy = (s.y1 + s.y2) / 2;
+      const r = Math.sqrt(Math.pow(s.x2 - s.x1, 2) + Math.pow(s.y2 - s.y1, 2)) / 2;
+      ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+      ctx.stroke();
+      return;
+    }
+    // PEN / ERASER
+    const isEraser = s.type === 'eraser';
+    ctx.strokeStyle = isEraser ? '#17351f' : s.color;
+    ctx.lineWidth = isEraser ? 30 : s.size;
+
+    if (s.pts.length === 1) {
+      ctx.beginPath();
+      ctx.arc(s.pts[0].x, s.pts[0].y, isEraser ? 15 : s.size / 2, 0, 2 * Math.PI);
+      ctx.fillStyle = isEraser ? '#17351f' : s.color;
+      ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(s.pts[0].x, s.pts[0].y);
+      for (let i = 1; i < s.pts.length; i++) ctx.lineTo(s.pts[i].x, s.pts[i].y);
+      ctx.stroke();
+    }
+  }
+
+  // ================= POINTER =================
+  function onPointerDown(e) {
+    e.preventDefault();
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+
+    const { x, y } = getCanvasCoords(e);
+    redoStack = [];
+
+    if (mode === 'pen' || mode === 'eraser') {
+      currentStroke = {
+        type: mode,
+        pts: [{ x, y }],
+        color: mode === 'eraser' ? '#17351f' : currentColor,
+        size: mode === 'eraser' ? 30 : currentSize
+      };
+      strokes.push(currentStroke);
+      redraw();
+    } else if (mode === 'line' || mode === 'rect' || mode === 'circle') {
+      shapeStart = { x, y };
+      currentStroke = {
+        type: mode,
+        x1: x, y1: y, x2: x, y2: y,
+        color: currentColor,
+        size: currentSize
+      };
+      strokes.push(currentStroke);
+      redraw();
+    }
+  }
+
+  function onPointerMove(e) {
+    if (!currentStroke) return;
+    e.preventDefault();
+    const { x, y } = getCanvasCoords(e);
+
+    if (mode === 'pen' || mode === 'eraser') {
+      currentStroke.pts.push({ x, y });
+    } else if (shapeStart) {
+      currentStroke.x2 = x;
+      currentStroke.y2 = y;
+    }
+    redraw();
+  }
+
+  function onPointerUp(e) {
+    if (currentStroke) {
+      // Remove tiny zero-size shapes
+      if (mode === 'line' && currentStroke.x1 === currentStroke.x2 && currentStroke.y1 === currentStroke.y2) strokes.pop();
+      if (mode === 'rect' && Math.abs(currentStroke.x2 - currentStroke.x1) < 3 && Math.abs(currentStroke.y2 - currentStroke.y1) < 3) strokes.pop();
+      if (mode === 'circle' && Math.abs(currentStroke.x2 - currentStroke.x1) < 3 && Math.abs(currentStroke.y2 - currentStroke.y1) < 3) strokes.pop();
+
+      currentStroke = null;
+      shapeStart = null;
+      try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+      redraw();
+    }
+  }
+
+  function onPointerCancel(e) {
+    currentStroke = null;
+    shapeStart = null;
+    try { canvas.releasePointerCapture(e.pointerId); } catch (err) {}
+  }
+
+  canvas.addEventListener('pointerdown', onPointerDown);
+  canvas.addEventListener('pointermove', onPointerMove);
+  canvas.addEventListener('pointerup', onPointerUp);
+  canvas.addEventListener('pointercancel', onPointerCancel);
+  canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+  canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+  canvas.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  // ================= RESIZE LISTENERS =================
+  function handleResize() {
+    dpr = window.devicePixelRatio || 1;
+    resizeCanvas();
+  }
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('orientationchange', () => setTimeout(handleResize, 150));
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', handleResize);
+
+  // ================= TOOL MODE =================
+  function updateActiveTool() {
+    [btnPen, btnEraser, btnLine, btnRect, btnCircle].forEach(b => b.classList.remove('active-tool'));
+    if (mode === 'pen') btnPen.classList.add('active-tool');
+    else if (mode === 'eraser') btnEraser.classList.add('active-tool');
+    else if (mode === 'line') btnLine.classList.add('active-tool');
+    else if (mode === 'rect') btnRect.classList.add('active-tool');
+    else if (mode === 'circle') btnCircle.classList.add('active-tool');
+  }
+
+  // ================= GLOBAL API =================
+  window.clearBoard = function() {
+    if (strokes.length === 0) return;
+    redoStack = strokes.slice();
+    strokes = [    .toolbar {
       flex: 0 0 auto;
       display: flex;
       flex-wrap: wrap;
