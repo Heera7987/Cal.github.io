@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CG NGDRS Fee Calculator (Block 1%)</title>
+    <title>CG NGDRS Fee Calculator (Guide vs Bainama)</title>
     <style>
         :root {
             --primary: #1a56db;
@@ -20,7 +20,7 @@
             background: var(--bg); display: flex; justify-content: center;
             padding: 20px 10px; min-height: 100vh; color: var(--text-dark);
         }
-        .container { width: 100%; max-width: 550px; }
+        .container { width: 100%; max-width: 600px; }
 
         .card {
             background: var(--card-bg); border-radius: 16px; padding: 24px;
@@ -32,6 +32,7 @@
 
         .form-group { margin-bottom: 16px; }
         label { display: block; font-size: 13px; font-weight: 500; color: #4b5563; margin-bottom: 6px; }
+        .help-text { font-size: 11px; color: #6b7280; margin-top: 4px; line-height: 1.4; }
 
         input, select {
             width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
@@ -47,12 +48,13 @@
         .row { display: flex; gap: 14px; margin-bottom: 16px; }
         .col { flex: 1; }
 
-        .radio-group { display: flex; gap: 10px; margin-top: 5px; }
+        .radio-group { display: flex; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
         .radio-label {
             flex: 1; display: flex; align-items: center; justify-content: center;
             padding: 10px; border: 1.5px solid var(--border); border-radius: 8px;
             cursor: pointer; font-size: 13px; font-weight: 500;
             transition: all 0.2s; background: #fff; text-align: center;
+            min-width: 100px;
         }
         .radio-label input { display: none; }
         .radio-label:has(input:checked) {
@@ -90,121 +92,105 @@
             line-height: 1.6; background: #f9fafb; padding: 12px; border-radius: 6px;
         }
 
-        /* ================= BILL / PRINT STYLES ================= */
-        .print-bill {
-            display: none;
+        .highlight-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: #1e40af;
+            line-height: 1.5;
         }
 
+        .unit-info {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #065f46;
+            margin-top: 6px;
+        }
+
+        .print-bill { display: none; }
+
         @media print {
-            body {
-                background: #fff;
-                padding: 0;
-                display: block;
-            }
-            .container {
-                max-width: 100%;
-                padding: 0;
-            }
-            .card, .btn-group, .note {
-                display: none !important;
-            }
+            body { background: #fff; padding: 0; display: block; }
+            .container { max-width: 100%; padding: 0; }
+            .card, .btn-group, .note { display: none !important; }
             .print-bill {
                 display: block !important;
                 font-family: 'Segoe UI', Tahoma, sans-serif;
-                color: #000;
-                padding: 20px 30px;
-                max-width: 100%;
-                background: #fff;
+                color: #000; padding: 20px 30px;
+                max-width: 100%; background: #fff;
             }
             .print-bill h1 {
-                text-align: center;
-                font-size: 22px;
-                font-weight: 800;
-                border-bottom: 3px double #000;
-                padding-bottom: 8px;
-                margin-bottom: 4px;
+                text-align: center; font-size: 22px; font-weight: 800;
+                border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 4px;
             }
             .print-bill .bill-sub {
-                text-align: center;
-                font-size: 11px;
-                color: #444;
-                margin-bottom: 18px;
+                text-align: center; font-size: 11px; color: #444; margin-bottom: 18px;
             }
             .print-bill table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 16px;
+                width: 100%; border-collapse: collapse; margin-bottom: 16px;
             }
             .print-bill table th,
             .print-bill table td {
-                border: 1px solid #444;
-                padding: 8px 12px;
-                font-size: 13px;
-                text-align: left;
+                border: 1px solid #444; padding: 8px 12px;
+                font-size: 13px; text-align: left;
             }
             .print-bill table th {
-                background: #f0f0f0;
-                font-weight: 700;
-                width: 40%;
+                background: #f0f0f0; font-weight: 700; width: 45%;
             }
             .print-bill .section-title {
-                font-size: 15px;
-                font-weight: 700;
-                margin: 18px 0 8px 0;
-                border-bottom: 1px solid #999;
-                padding-bottom: 4px;
+                font-size: 15px; font-weight: 700; margin: 18px 0 8px 0;
+                border-bottom: 1px solid #999; padding-bottom: 4px;
             }
             .print-bill .total-row td {
-                font-size: 16px;
-                font-weight: 800;
-                border-top: 2px solid #000;
-                background: #f9f9f9;
+                font-size: 16px; font-weight: 800;
+                border-top: 2px solid #000; background: #f9f9f9;
             }
             .print-bill .footer {
-                margin-top: 25px;
-                font-size: 10px;
-                color: #555;
-                border-top: 1px solid #ccc;
-                padding-top: 10px;
-                text-align: center;
+                margin-top: 25px; font-size: 10px; color: #555;
+                border-top: 1px solid #ccc; padding-top: 10px; text-align: center;
             }
             .print-bill .signature {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 50px;
-                font-size: 13px;
+                display: flex; justify-content: space-between;
+                margin-top: 50px; font-size: 13px;
             }
             .print-bill .signature div {
-                border-top: 1px solid #000;
-                padding-top: 4px;
-                width: 180px;
-                text-align: center;
+                border-top: 1px solid #000; padding-top: 4px;
+                width: 180px; text-align: center;
             }
-            @page {
-                margin: 15mm;
-            }
+            @page { margin: 15mm; }
         }
-        /* ======================================================== */
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- ===== CALCULATOR FORM ===== -->
     <div class="card">
         <h2>छत्तीसगढ़ NGDRS Fee Calculator</h2>
-        <p class="subtitle">यह कैलकुलेटर छत्तीसगढ़ सरकार के नवीनतम (2026) नियमों पर आधारित है। ब्लॉक शुल्क 1% के साथ।</p>
+        <p class="subtitle">यह कैलकुलेटर छत्तीसगढ़ सरकार के नवीनतम (2026) नियमों पर आधारित है।</p>
 
+        <div class="highlight-box">
+            📌 <b>महत्वपूर्ण:</b> स्टाम्प ड्यूटी <b>सरकारी गाइडलाइन दर</b> और <b>बैनामा दर</b> में जो <b>अधिक</b> हो, उस पर लगती है।<br>
+            ⚠️ <b>ध्यान दें:</b> रकबा और दर <b>एक ही इकाई</b> में डालें (जैसे वर्ग फुट में रकबा → ₹/वर्ग फुट में दर)।
+        </div>
+
+        <!-- Document Type -->
         <div class="form-group">
             <label>दस्तावेज़ प्रकार</label>
             <select id="docType" onchange="toggleRelationField(); updateRates();">
-                <option value="sale">बिक्रय विलेख (Sale Deed)</option>
+                <option value="sale">बिक्रय विलेख (Sale Deed / बैनामा)</option>
                 <option value="gift">दान पत्र (Gift Deed)</option>
                 <option value="mortgage">बंधक (Mortgage)</option>
                 <option value="lease">पट्टा (Lease)</option>
             </select>
         </div>
 
+        <!-- Gift Relation -->
         <div class="form-group" id="relationField" style="display: none;">
             <label>गिफ्ट किसे किया जा रहा है?</label>
             <select id="giftRelation" onchange="updateRates()">
@@ -213,6 +199,7 @@
             </select>
         </div>
 
+        <!-- Buyer Gender -->
         <div class="form-group" id="genderField">
             <label>खरीदार (Buyer) का प्रकार</label>
             <div class="radio-group">
@@ -222,35 +209,67 @@
             </div>
         </div>
 
+        <!-- Land Type -->
         <div class="form-group" id="landTypeField">
             <label>भूमि का प्रकार (कृषि भूमि के लिए)</label>
             <div class="radio-group">
                 <label class="radio-label"><input type="radio" name="landType" value="irrigated" checked onchange="calculateFees()"> सिंचित (Irrigated)</label>
                 <label class="radio-label"><input type="radio" name="landType" value="unirrigated" onchange="calculateFees()"> असिंचित (Unirrigated)</label>
             </div>
-            <p style="font-size: 11px; color: #6b7280; margin-top: 6px;">*असिंचित भूमि पर बाजार दर में 20% की छूट।</p>
+            <p class="help-text">*असिंचित भूमि पर बाजार दर में 20% की छूट मिलती है।</p>
         </div>
 
+        <!-- Unit Selection -->
         <div class="form-group">
-            <label>मार्केट रेट (₹ गाइडलाइन दर के अनुसार)</label>
-            <input type="number" id="marketRate" value="0" oninput="calculateFees()">
+            <label>रकबा और दर की इकाई (दोनों एक ही इकाई में डालें)</label>
+            <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="areaUnit" value="sqft" checked onchange="updateUnitLabels(); calculateFees();"> वर्ग फुट</label>
+                <label class="radio-label"><input type="radio" name="areaUnit" value="sqm" onchange="updateUnitLabels(); calculateFees();"> वर्ग मीटर</label>
+                <label class="radio-label"><input type="radio" name="areaUnit" value="hectare" onchange="updateUnitLabels(); calculateFees();"> हेक्टेयर</label>
+            </div>
         </div>
 
+        <!-- Rakba -->
         <div class="form-group">
-            <label>रकबा (वर्ग मीटर/हेक्टर/)</label>
-            <input type="number" id="rakba" value="0" oninput="calculateFees()">
+            <label>रकबा (क्षेत्रफल) <span id="rakbaUnitLabel">वर्ग फुट</span> में</label>
+            <input type="number" id="rakba" value="0" oninput="calculateFees()" placeholder="जैसे 12418">
         </div>
 
+        <!-- ====== सरकारी गाइडलाइन दर ====== -->
         <div class="form-group">
-            <label>प्रभावी मार्केट रेट(₹ गाइडलाइन दर के अनुसार)</label>
-            <input type="text" id="effectiveRate" value="1,500" readonly>
+            <label>सरकारी गाइडलाइन दर (₹ प्रति <span id="guideUnitLabel">वर्ग फुट</span>)</label>
+            <input type="number" id="guideRate" value="0" oninput="calculateFees()" placeholder="जैसे 1200">
+            <p class="help-text">यह सरकार द्वारा तय की गई दर है (Collector Rate / Circle Rate)।</p>
         </div>
 
+        <!-- ====== बैनामा दर (अपडेटेड लेबल) ====== -->
         <div class="form-group">
-            <label>कुल मार्केट वैल्यू (₹ बाजार भाव )</label>
-            <input type="text" id="marketValue" value="1,86,27,000" readonly>
+            <label>बैनामा दर (दोनों पार्टियों के बीच आपसी लेन-देन की दर) — ₹ प्रति <span id="bainamaUnitLabel">वर्ग फुट</span></label>
+            <input type="number" id="marketRate" value="0" oninput="calculateFees()" placeholder="जैसे 1500">
+            <p class="help-text">यह वह दर है जो खरीदार और विक्रेता ने आपस में तय की है और बैनामे में लिखी गई है।</p>
+        </div>
+        <!-- ==================================== -->
+
+        <!-- Unit Info -->
+        <div class="unit-info" id="unitInfo">
+            ✔ गणना वर्ग फुट में हो रही है।
         </div>
 
+        <!-- Effective Rate -->
+        <div class="form-group" style="margin-top: 16px;">
+            <label>कर योग्य दर (₹ प्रति वर्ग फुट) — गाइडलाइन/बैनामा में जो अधिक हो</label>
+            <input type="text" id="effectiveRate" value="0" readonly>
+            <p class="help-text" id="rateSourceText">—</p>
+        </div>
+
+        <!-- Market Value -->
+        <div class="form-group">
+            <label>कुल कर योग्य मूल्य (₹) — स्टाम्प हेतु</label>
+            <input type="text" id="marketValue" value="0" readonly>
+            <p class="help-text" id="calcDetail">—</p>
+        </div>
+
+        <!-- Rates -->
         <div class="row">
             <div class="col">
                 <label>स्टाम्प % (CG नियम)</label>
@@ -262,6 +281,7 @@
             </div>
         </div>
 
+        <!-- Other Fees -->
         <div class="row">
             <div class="col">
                 <label>अन्य सरकारी शुल्क ₹</label>
@@ -302,7 +322,8 @@
             • गिफ्ट (गैर-रिश्तेदार): स्टाम्प 0.5% + पंजीयन 4%<br>
             • बंधक: 0.5% + 0.5%<br>
             *ब्लॉक शुल्क 1% (छत्तीसगढ़ पंचायत राज अधिनियम, धारा 75)।<br>
-            *असिंचित भूमि पर मार्केट रेट में 20% छूट।<br>
+            *असिंचित भूमि पर बाजार दर में 20% छूट।<br>
+            *स्टाम्प हेतु कर योग्य मूल्य = (सरकारी गाइडलाइन/बैनामा में जो अधिक) × रकबा (वर्ग फुट में बदलकर)।<br>
             *0.60% उपकर मार्च 2026 से समाप्त।
         </p>
     </div>
@@ -315,87 +336,36 @@
     <h1>छत्तीसगढ़ संपत्ति शुल्क बिल</h1>
     <div class="bill-sub">NGDRS Fee Estimate — छत्तीसगढ़ शासन के नियमानुसार</div>
 
-    <!-- Property Details -->
     <div class="section-title">📋 संपत्ति विवरण</div>
     <table>
-        <tr>
-            <th>दस्तावेज़ प्रकार</th>
-            <td id="billDocType">बिक्रय विलेख (Sale Deed)</td>
-        </tr>
-        <tr>
-            <th>खरीदार का प्रकार</th>
-            <td id="billGender">पुरुष</td>
-        </tr>
-        <tr>
-            <th>भूमि का प्रकार</th>
-            <td id="billLandType">सिंचित (Irrigated)</td>
-        </tr>
-        <tr>
-            <th>मार्केट रेट (₹ / वर्ग फुट)</th>
-            <td id="billMarketRate">₹1,500</td>
-        </tr>
-        <tr>
-            <th>प्रभावी रेट (छूट के बाद)</th>
-            <td id="billEffectiveRate">₹1,500</td>
-        </tr>
-        <tr>
-            <th>रकबा (वर्ग फुट)</th>
-            <td id="billRakba">12,418</td>
-        </tr>
-        <tr>
-            <th>कुल मार्केट वैल्यू</th>
-            <td id="billMarketValue"><b>₹1,86,27,000</b></td>
-        </tr>
+        <tr><th>दस्तावेज़ प्रकार</th><td id="billDocType">बिक्रय विलेख</td></tr>
+        <tr><th>खरीदार का प्रकार</th><td id="billGender">पुरुष</td></tr>
+        <tr><th>भूमि का प्रकार</th><td id="billLandType">सिंचित</td></tr>
+        <tr><th>सरकारी गाइडलाइन दर</th><td id="billGuideRate">₹0</td></tr>
+        <tr><th>बैनामा दर (आपसी लेन-देन)</th><td id="billMarketRate">₹0</td></tr>
+        <tr><th>रकबा</th><td id="billRakba">0</td></tr>
+        <tr><th>कर योग्य दर (₹/वर्ग फुट)</th><td id="billEffectiveRate">₹0</td></tr>
+        <tr><th>कर योग्य मूल्य</th><td id="billMarketValue"><b>₹0</b></td></tr>
     </table>
 
-    <!-- Fee Breakdown -->
     <div class="section-title">💰 शुल्क विवरण</div>
     <table>
-        <tr>
-            <th>स्टाम्प दर (%)</th>
-            <td id="billStampPercent">5%</td>
-        </tr>
-        <tr>
-            <th>पंजीयन दर (%)</th>
-            <td id="billRegPercent">4%</td>
-        </tr>
-        <tr>
-            <th>मुद्रांक शुल्क (Stamp Duty)</th>
-            <td id="billStampDuty">₹0</td>
-        </tr>
-        <tr>
-            <th>ब्लॉक शुल्क (1%)</th>
-            <td id="billBlockFee">₹0</td>
-        </tr>
-        <tr>
-            <th>पंजीयन शुल्क</th>
-            <td id="billRegFee">₹0</td>
-        </tr>
-        <tr>
-            <th>अन्य सरकारी शुल्क</th>
-            <td id="billOtherFees">₹0</td>
-        </tr>
-        <tr>
-            <th>Scanning / Handling</th>
-            <td id="billScanFee">₹0</td>
-        </tr>
-        <tr>
-            <th>टाइपिंग/ऑफिस खर्च</th>
-            <td id="billTypingFee">₹0</td>
-        </tr>
-        <tr class="total-row">
-            <th>कुल योग</th>
-            <td id="billTotal">₹0</td>
-        </tr>
+        <tr><th>स्टाम्प दर (%)</th><td id="billStampPercent">5%</td></tr>
+        <tr><th>पंजीयन दर (%)</th><td id="billRegPercent">4%</td></tr>
+        <tr><th>मुद्रांक शुल्क</th><td id="billStampDuty">₹0</td></tr>
+        <tr><th>ब्लॉक शुल्क (1%)</th><td id="billBlockFee">₹0</td></tr>
+        <tr><th>पंजीयन शुल्क</th><td id="billRegFee">₹0</td></tr>
+        <tr><th>अन्य सरकारी शुल्क</th><td id="billOtherFees">₹0</td></tr>
+        <tr><th>Scanning / Handling</th><td id="billScanFee">₹0</td></tr>
+        <tr><th>टाइपिंग/ऑफिस खर्च</th><td id="billTypingFee">₹0</td></tr>
+        <tr class="total-row"><th>कुल योग</th><td id="billTotal">₹0</td></tr>
     </table>
 
-    <!-- Signature -->
     <div class="signature">
         <div>हस्ताक्षर (आवेदक)</div>
         <div>हस्ताक्षर (अधिकारी)</div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         यह एक कंप्यूटर-जनित अनुमानित बिल है। वास्तविक शुल्क NGDRS पोर्टल पर ही मान्य होगा।<br>
         दिनांक: <span id="billDate"></span> &nbsp;|&nbsp; समय: <span id="billTime"></span>
@@ -403,9 +373,33 @@
 </div>
 
 <script>
+    const SQM_TO_SQFT = 10.7639;
+    const HECTARE_TO_SQFT = 107639;
+
     function formatCurrency(num) {
         if (isNaN(num)) return "₹0";
         return "₹" + Math.round(num).toLocaleString('en-IN');
+    }
+
+    function updateUnitLabels() {
+        const unit = document.querySelector('input[name="areaUnit"]:checked').value;
+        let unitHindi = 'वर्ग फुट';
+        if (unit === 'sqm') unitHindi = 'वर्ग मीटर';
+        else if (unit === 'hectare') unitHindi = 'हेक्टेयर';
+
+        document.getElementById('rakbaUnitLabel').innerText = unitHindi;
+        document.getElementById('guideUnitLabel').innerText = unitHindi;
+        document.getElementById('bainamaUnitLabel').innerText = unitHindi;
+
+        let infoText = '';
+        if (unit === 'sqft') {
+            infoText = '✔ गणना वर्ग फुट में हो रही है।';
+        } else if (unit === 'sqm') {
+            infoText = '✔ गणना वर्ग मीटर में हो रही है। (1 वर्ग मीटर = 10.7639 वर्ग फुट)';
+        } else {
+            infoText = '✔ गणना हेक्टेयर में हो रही है। (1 हेक्टेयर = 107,639 वर्ग फुट)';
+        }
+        document.getElementById('unitInfo').innerText = infoText;
     }
 
     function toggleRelationField() {
@@ -440,18 +434,45 @@
     }
 
     function calculateFees() {
-        const marketRate = parseFloat(document.getElementById('marketRate').value) || 0;
-        const rakba = parseFloat(document.getElementById('rakba').value) || 0;
+        const unit = document.querySelector('input[name="areaUnit"]:checked').value;
+        const rakbaInput = parseFloat(document.getElementById('rakba').value) || 0;
+        const guideRateInput = parseFloat(document.getElementById('guideRate').value) || 0;
+        const bainamaRateInput = parseFloat(document.getElementById('marketRate').value) || 0;
+
         const landType = document.querySelector('input[name="landType"]:checked').value;
-        
-        let effectiveRate = marketRate;
+        let adjustedBainamaRate = bainamaRateInput;
         if (landType === 'unirrigated') {
-            effectiveRate = marketRate * 0.80;
+            adjustedBainamaRate = bainamaRateInput * 0.80;
         }
 
-        const marketValue = effectiveRate * rakba;
-        document.getElementById('effectiveRate').value = Math.round(effectiveRate).toLocaleString('en-IN');
+        const effectiveRateInUnit = Math.max(guideRateInput, adjustedBainamaRate);
+        const rateSource = (guideRateInput >= adjustedBainamaRate) ? 'सरकारी गाइडलाइन दर' : 'बैनामा दर';
+
+        let rakbaSqft = rakbaInput;
+        let effectiveRateSqft = effectiveRateInUnit;
+
+        if (unit === 'sqm') {
+            rakbaSqft = rakbaInput * SQM_TO_SQFT;
+            effectiveRateSqft = effectiveRateInUnit / SQM_TO_SQFT;
+        } else if (unit === 'hectare') {
+            rakbaSqft = rakbaInput * HECTARE_TO_SQFT;
+            effectiveRateSqft = effectiveRateInUnit / HECTARE_TO_SQFT;
+        }
+
+        const marketValue = rakbaSqft * effectiveRateSqft;
+
+        document.getElementById('effectiveRate').value = Math.round(effectiveRateSqft).toLocaleString('en-IN');
+        document.getElementById('rateSourceText').innerText = '✔ लागू दर: ' + rateSource + ' (जो अधिक है)';
         document.getElementById('marketValue').value = Math.round(marketValue).toLocaleString('en-IN');
+
+        let unitHindi = 'वर्ग फुट';
+        if (unit === 'sqm') unitHindi = 'वर्ग मीटर';
+        else if (unit === 'hectare') unitHindi = 'हेक्टेयर';
+
+        document.getElementById('calcDetail').innerText = 
+            'गणना: ' + rakbaInput.toLocaleString('en-IN') + ' ' + unitHindi + ' × ₹' + 
+            Math.round(effectiveRateInUnit).toLocaleString('en-IN') + ' = ₹' + 
+            Math.round(marketValue).toLocaleString('en-IN');
 
         const stampPercent = parseFloat(document.getElementById('stampPercent').value) || 0;
         const regPercent = parseFloat(document.getElementById('regPercent').value) || 0;
@@ -465,7 +486,6 @@
 
         const total = stampDuty + blockFee + registrationFee + otherGovtFees + scanningFees + typingFees;
 
-        // Update Results Card
         document.getElementById('resStamp').innerText = formatCurrency(stampDuty);
         document.getElementById('resBlock').innerText = formatCurrency(blockFee);
         document.getElementById('resReg').innerText = formatCurrency(registrationFee);
@@ -474,7 +494,6 @@
         document.getElementById('resType').innerText = formatCurrency(typingFees);
         document.getElementById('resTotal').innerText = formatCurrency(total);
 
-        // ===== UPDATE PRINT BILL =====
         const docTypeText = document.getElementById('docType').options[document.getElementById('docType').selectedIndex].text;
         const genderText = document.querySelector('input[name="gender"]:checked').parentElement.innerText.trim();
         const landTypeText = document.querySelector('input[name="landType"]:checked').parentElement.innerText.trim();
@@ -482,9 +501,10 @@
         document.getElementById('billDocType').innerText = docTypeText;
         document.getElementById('billGender').innerText = genderText;
         document.getElementById('billLandType').innerText = landTypeText;
-        document.getElementById('billMarketRate').innerText = '₹' + marketRate.toLocaleString('en-IN');
-        document.getElementById('billEffectiveRate').innerText = '₹' + Math.round(effectiveRate).toLocaleString('en-IN');
-        document.getElementById('billRakba').innerText = rakba.toLocaleString('en-IN');
+        document.getElementById('billGuideRate').innerText = '₹' + guideRateInput.toLocaleString('en-IN') + ' प्रति ' + unitHindi;
+        document.getElementById('billMarketRate').innerText = '₹' + bainamaRateInput.toLocaleString('en-IN') + ' प्रति ' + unitHindi;
+        document.getElementById('billRakba').innerText = rakbaInput.toLocaleString('en-IN') + ' ' + unitHindi;
+        document.getElementById('billEffectiveRate').innerText = '₹' + Math.round(effectiveRateSqft).toLocaleString('en-IN');
         document.getElementById('billMarketValue').innerHTML = '<b>' + formatCurrency(marketValue) + '</b>';
         document.getElementById('billStampPercent').innerText = stampPercent + '%';
         document.getElementById('billRegPercent').innerText = regPercent + '%';
@@ -496,16 +516,14 @@
         document.getElementById('billTypingFee').innerText = formatCurrency(typingFees);
         document.getElementById('billTotal').innerText = formatCurrency(total);
 
-        // Date & Time
         const now = new Date();
-        const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-        document.getElementById('billDate').innerText = dateStr;
-        document.getElementById('billTime').innerText = timeStr;
+        document.getElementById('billDate').innerText = now.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        document.getElementById('billTime').innerText = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
     }
 
     window.onload = function() {
         toggleRelationField();
+        updateUnitLabels();
         updateRates();
     };
 </script>
